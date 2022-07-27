@@ -1,0 +1,90 @@
+@charset "UTF-8";
+
+/* main */
+/* main */
+section{
+	padding: 1vh 3vw 5vh 3vw; /* 위 오른쪽 아래 왼쪽 순서 */
+	background-color: #9be17b;
+	width: 98vw;
+	margin: 0 1vw;
+	border-radius:10px;
+}
+.container{
+	width: 98vw;
+	border-radius: 10px;
+	background-color:#79BE8F;
+}
+.mapContainer{
+	border-radius: 10px;
+}
+
+#map {
+	height:70vh;
+	margin: 1% 1.5% 1% 3%;
+	border:3px;
+}
+
+.grpNum {
+	width: 40vw;
+	margin-left: 25%;
+	padding:1%;
+}
+.input_box{
+	height: 60vh;
+	overflow: auto;
+	background-color:#FFFFFF;
+}
+.date, .input_box, .btnAll {
+	padding:1.5%;
+}
+#planList{
+	border-color: #198753;
+    border-radius: 5px;
+    border-width: thick;
+    color:#198753;
+}
+#planDate{
+	background-color:#FFFFFF;
+	border:none;
+	/*border-color: #307470;*/
+    border-radius: 5px;
+    /*border-width: thick;
+    margin:5px;*/
+    color:#FFFFFF;
+    background-color: transparent;
+}
+#AddPlan{
+	margin:5px;
+	width:9vw;
+	font-size:small;
+}
+ #inputAppend {
+	width:100%;
+	position: relative;
+} 
+.input-group div input{
+	justify-content: center;
+	width: 75%;	
+} 
+.input-group div{
+	padding: 5px;
+}
+.dropdown{
+	height: 30vh;
+	overflow: auto;
+}
+
+.btnPlaceListAll{
+	padding-left: 5px;
+	padding-right: 5px;
+}
+.btnPlaceListAll > div {
+    width: 100%;
+    display: flex;
+}
+#btnDibs, #btnPlace, #btnRsv{
+	width:100%;
+}
+.flowNum{
+	color:white;
+}

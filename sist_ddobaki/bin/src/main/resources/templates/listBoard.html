@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html xmlns:th = "http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<title>Insert title here</title>
+
+
+<!-- CSS only -->
+
+<!-- icon -->
+
+
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-0evHe/X+R7YkIZDRvuzKMRqM+OrBnVFBL6DOitfPri4tjfHxaWutUpFmBp4vmVor" crossorigin="anonymous">
+<link rel="stylesheet" th:href="@{/styles/common.css}">
+<style type="text/css">
+span{
+	display: inline-block;
+	margin: 5px;
+	cursor: pointer;
+   	font-size: 1.2em;		
+	}
+	
+	
+#paging{
+display: flex;
+justify-content: center;
+  
+}
+#posting{
+display: flex;
+  justify-content: right;
+
+  padding-top: 0px;
+  padding-right: 130px;
+  padding-bottom: 50px;
+  padding-left: 80px;
+
+}
+#search{
+display: flex;
+  justify-content: right;
+
+  padding-top: 0px;
+  padding-right: 50px;
+  padding-bottom: 50px;
+  padding-left: 80px;
+
+}
+#btnSearch{
+border-radius: 10px;
+border-style: solid;
+border-color: #6bba62;
+padding: 4px;
+background-color: #6bba62;
+
+opacity: 0.8;
+}
+
+
+fieldset{
+	  margin: auto;
+	  width: 80%;
+	  border: 3px solid #6bba62;	  
+}
+
+
+th {
+  height: 70px;
+  padding: 15px;
+ font-size: 1.2em;
+  border-bottom: 3px solid #ddd;
+
+}
+
+td{
+ border-bottom: 1px solid #ddd;
+padding: 10px;	
+}
+
+table {
+  width: 100%;
+  text-align: justify;
+  table-layout : fixed;
+}
+
+a:hover {
+   color: #73AD21;
+  text-decoration-line: underline;
+  text-decoration-color: #6bba62;
+}
+
+#category{
+ display: flex;
+ justify-content: center;
+ padding: 30px;
+ font-weight: bold;
+ font-size: 2.0em;
+ color: #6bba62;
+}
+
+span:hover {
+  color: #73AD21;
+  text-decoration:underline;
+  border-style: solid;
+  border-radius: 5px;
+  border-color: #6bba62;
+  padding: 5px;
+  background-color: #6bba62;
+  color: white;
+}
+	
+#btnPost{
+border-radius: 10px;
+border-style: solid;
+border-color: #6bba62;
+padding: 5px;
+background-color: #6bba62;
+color: white;
+opacity: 0.8;
+}	
+</style>
+<!-- JavaScript Bundle with Popper -->
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/js/bootstrap.bundle.min.js" integrity="sha384-pprn3073KE6tl6bjs2QrFaJGz5/SUsLqktiwsUTF55Jfv3qYSDhgCecCxMW52nD2" crossorigin="anonymous"></script>
+<script type="text/javascript" src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script th:inline="javascript">
+/*<![CDATA[*/
+	//전체 레코드수
+	var listLength=/*[[${listLength}]]*/
+		console.log(listLength);
+  
+	//카테고리별 반환 리스트	
+	var listByCategory=/*[[${boardCategory}]]*/	
+		
+	console.log(listByCategory);
+	console.log(listByCategory[0].userinfo.user_nick);
+
+
+	
+$(function(){
+		
+	//console.log(listLength);
+	
+	//페이징처리
+	var totalRecords=listLength;	//전체레코드수 
+	var pageSize=7;	
+	var pageGroup=2;	 
+	var totalPage=Math.ceil(totalRecords/pageSize);	//전체페이지수
+	
+	//console.log(totalPage)
+
+	//1쪽1번
+	printPage(1);
+	printPageNumber(1);
+
+	
+	//페이지 번호 출력하기
+	function printPage(pageNUM){
+		
+		//console.log("printPage동작함");
+
+		
+		$("#boardList").empty();
+		
+		//처음& 마지막
+		var start = (pageNUM-1) * pageSize;
+		var end = start + pageSize-1;	
+		//console.log(listByCategory[2].post_num);
+		
+		//전체 레코드보다 크지않도록 함
+		if(end>listByCategory.length-1){
+			end=listByCategory.length-1;			
+		}
+		
+		for(var i=start; i<=end; i++){
+
+			$("#boardList").append("<tr>");
+			$("#boardList").append("<td>"+listByCategory[i].post_num+"</td>");
+			$("#boardList").append("<td>"+listByCategory[i].userinfo.user_nick+"</td>");
+			$("#boardList").append("<td><a href=/detailPost"+"/"+listByCategory[i].board_num+"/"+listByCategory[i].post_num+">"+listByCategory[i].post_title+"</a></td>");			
+			$("#boardList").append("<td>"+listByCategory[i].post_hit+"</td>");
+			$("#boardList").append("<td>"+listByCategory[i].post_regdate+"</td>");
+			$("#boardList").append("</tr>");
+			
+	}
+		
+	}
+	
+	//페이지 번호
+	function printPageNumber(pageNUM){
+		
+		//console.log("printPageNumber함수 동작");
+	
+		$("#paging").empty();
+
+		//start=${T(Math).floor(boardList.number/10)*10 + 1} ://버림
+		var startPage = Math.floor((pageNUM-1)/pageGroup)*pageGroup +1;
+		var endPage = startPage + pageGroup-1;
+		
+		//console.log("시작페이지번호: "+startPage);
+		//console.log("마지막페이지번호: "+endPage);
+		
+	
+		if(endPage > totalPage){
+			endPage = totalPage;
+		}
+		
+	
+		if(startPage > 1){
+			var span = $("<span></span>").html("[<<]");
+			$(span).attr("page",startPage-1);
+			$("#paging").append(span);
+		}
+
+		
+		for(i=startPage; i<=endPage; i++){
+			var span = $("<span></span>").html(i);
+			//이벤트
+			$(span).attr("page",i);
+			$("#paging").append(span);
+		}
+		
+		//다음
+		if(endPage< totalPage){
+			var span = $("<span></span>").html("[>>]");
+			$(span).attr("page",endPage+1);
+			$("#paging").append(span);
+		}
+		
+	}
+		//새로 만들어지는 span
+		$(document).on("click","span",function(){
+			var page = $(this).attr("page");
+			printPage(page);	
+			printPageNumber(page);
+			
+		});
+	
+
+	
+	//검색하기 버튼 눌렀을때
+	$("#btnSearch").click(function(){
+		$("#boardList").empty();
+		var title = $("#searchTitle").val();
+		var BNum=/*[[${board_num}]]*/
+		$.ajax({
+			url:"/findByPostTitle",
+			data:{"board_num" : BNum, "post_keyword" : title},
+			//dataType:"html",데이터를 받아오는거니까 html로 받아오는게 아님!!
+			//async:true, //ajax를 비동기가 아닌 동기식으로 처리
+			success:function(reviewList){
+			$("#boardList").empty();
+			$.each(reviewList,function(i){
+				//console.log(reviewList[i].board_num);
+			//	console.log(reviewList[i].userinfo.user_nick);
+				$("#boardList").append("<tr>");
+				
+				$("#boardList").append("<td>"+reviewList[i].post_num+"</td>");
+				$("#boardList").append("<td>"+reviewList[i].userinfo.user_nick+"</td>");
+				$("#boardList").append("<td><a href=/detailPost"+"/"+reviewList[i].board_num+"/"+reviewList[i].post_num+">"+reviewList[i].post_title+"</a></td>");									
+				$("#boardList").append("<td>"+reviewList[i].post_hit+"</td>");	
+				$("#boardList").append("<td>"+reviewList[i].post_regdate+"</td>");	
+				
+				$("#boardList").append("</tr>");
+				})
+				
+				//검색결과가 pageSize보다 작으면 페이지 x
+				if(reviewList.length < pageSize){
+					$("#paging").empty();
+				}
+				
+			}
+		});//ajax 끝
+	})
+});
+/*]]>*/
+</script>
+<!-- header fragment 사용 -->
+<th:block th:replace="fragments/header :: headerFragment"></th:block>
+</head>
+<body>
+<fieldset>
+  <th:block th:switch="${board_num}">
+    <div th:case="1" id="category">NOTICE</div>
+    <div th:case="2" id="category">COMMUNITY</div>
+    <div th:case="3" id="category">REVIEW</div>
+    <div th:case="4" id="category">FAQ</div>
+	</th:block>
+	<br>
+	<div id="search">
+  <input type="search" id="searchTitle" name="post_keyword" placeholder="제목을 검색하세요"/>
+ <button id="btnSearch">검색</button>
+  <br>
+   </div>
+    <table>   
+        <thead>
+          <tr>
+             <th>글번호</th>                        
+             <th>작성자</th>  
+             <th>글제목</th>        
+             <th>조회수</th>
+             <th>작성일자</th>
+          </tr>
+        </thead>
+        <tbody id="boardList">
+        <!-- 
+            <tr th:each="b:${boardCategory}">
+            <td th:text="${b.post_num}"></td>
+          	<td id="btnDetail"><a th:href="@{/detailPost/{b.board_num}/{b.post_num}(b.board_num=${b.board_num},b.post_num=${b.post_num})}" style="text-decoration: none">
+          	<span th:text="${b.post_title}"></span></a>
+            <td th:text="${b.post_hit}"></td>
+          
+          </tr>
+           -->
+        </tbody>
+     </table>
+<div id="paging"></div>
+
+<div id="posting">
+
+<th:block th:switch="${board_num}">
+    <button id="btnPost" th:case="1" th:if="${#authentication.name=='jinjoo'}"><a th:href="@{/board/insertBoard/{board_num}(board_num=${board_num})}">글쓰기</a></button>
+    <button id="btnPost" th:case="2"><a th:href="@{/board/insertBoard/{board_num}(board_num=${board_num})}">글쓰기</a></button>
+    <button id="btnPost" th:case="3"><a th:href="@{/board/insertBoard/{board_num}(board_num=${board_num})}">글쓰기</a></button>
+    <button id="btnPost" th:case="4" th:if="${#authentication.name=='jinjoo'}"><a th:href="@{/board/insertBoard/{board_num}(board_num=${board_num})}">글쓰기</a></button>
+	</th:block>
+</div>
+</fieldset>
+
+<!-- footer fragment 사용 -->
+<th:block th:replace="fragments/footer :: footerFragment"></th:block>
+</body>
+</html>

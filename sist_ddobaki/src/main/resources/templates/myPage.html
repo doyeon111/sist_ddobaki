@@ -1,0 +1,412 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.w3.org/1999/xhtml" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+<meta charset="UTF-8" />
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+<!-- css reset -->
+<link rel="stylesheet"
+	href="https://cdn.jsdelivr.net/npm/reset-css@5.0.1/reset.min.css" />
+
+<!-- bootstrap -->
+<link rel="stylesheet"
+	href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css"
+	integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3"
+	crossorigin="anonymous" />
+
+<!-- fragment css -->
+<link rel="stylesheet" th:href="@{/styles/common.css}">
+
+<!-- jquery -->
+<script type="text/javascript"
+	src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+<title>Document</title>
+</head>
+<style>
+.detailBox {
+	margin-bottom: 3em;
+}
+
+.bigTitleBox {
+	padding: 0.3em 0;
+	font-size: 2em;
+	font-weight: bold;
+}
+
+h6 {
+	font-size: 1.3em;
+}
+
+.form-group {
+	padding: 0.4em 0;
+}
+.table{
+ width: 100%;
+  text-align: justify;
+  table-layout : fixed;
+}
+</style>
+
+<body>
+	<!-- header fragment 사용 -->
+	<th:block th:replace="fragments/header2 :: headerFragment"></th:block>
+	<main style="position: relative;">
+		<div id="imgBox" class="rounded-circle"
+			style="position: absolute; background-color: black; width: 130px; height: 130px; top: -10vh; left: 50%; margin-left: -65px; border: 3px solid gray; box-sizing: border-box; overflow: hidden; align-items: center;">
+			<!-- <img th:src="@{'/userImage/'+${user.user_file}}" alt="userImg.jpg"
+				id="userImg" style="width: 100%; height: 100%"> -->
+				
+				
+				<img th:src="@{|/userImage/${user.user_file}|}" alt="userImg.jpg"
+				id="userImg" style="width: 100%; height: 100%">
+		</div>
+		<!-- 메뉴, 본문 전체 컨테이너 -->
+		<div id="mainContainer"
+			style="display: flex; background: #9ae17b; height: 80vh; margin-top: 20vh; align-items: center;">
+			<!-- 왼쪽 메뉴 영역 -->
+			<!-- <div id="myMenuContainer"
+				style="width: 20vw; height: 60vh; background: white; padding: 0 0.5em; border-top: 3px solid gray; border-bottom: 3px solid gray; border-right: 3px solid gray;">
+				<div id="infoMenuBox">
+					<div id="infoMenuTitleBox">
+						<span id="infoMenuTitle">INFO</span>
+						<hr />
+					</div>
+					<ul id="infoMenu">
+						<a href="" id="info1" onclick="myBoardTitleClick()"><li>내가
+								쓴 리뷰</li></a>
+
+
+						<li>내 플랜</li>
+						<li>내 찜 리스트</li>
+						<li>예약 및 결제 내역</li>
+					</ul>
+				</div>
+
+				<div id="accountMenuBox">
+					<div id="accountMenuTitleBox">
+						<span id="accountMenuTitle">ACCOUNT</span>
+						<hr />
+					</div>
+					<ul id="accountMenu">
+						<li>내 정보 수정</li>
+						<li>강아지 목록</li>
+						<li>회원 탈퇴</li>
+						<li>LOG OUT</li>
+					</ul>
+				</div>
+			</div> -->
+
+			<!-- 오른쪽 본문 영역 -->
+			<div id="myPageContainer"
+				style="width: 100vw; height: 60vh; background: white; padding: 0 6em; overflow-y: scroll; border-top: 3px solid gray; border-bottom: 3px solid gray;">
+				<!-- info 영역 -->
+				<div id="infoContainer" style="padding: 0.5em 0">
+					<!-- info title -->
+					<div id="infoTitleBox" class="bigTitleBox">INFO</div>
+
+					<!-- 내가 쓴 글 -->
+					<div id="myBoardBox" class="detailBox">
+						<div id="myBoardTitleBox">
+							<h6 id="myBoardTitle">내가 쓴 글</h6>
+							<hr />
+						</div>
+						<div id="myBoardTableBox">
+							<table id="myBoard" class="table">
+								<thead>
+									<tr>
+										<td>글번호</td>
+										<td>글제목</td>
+										<td>조회수</td>
+									</tr>
+								</thead>
+								<tbody>
+									<tr th:each="bp,i:${myPost}">
+										<td th:text="${i.index+1}"></td>
+										<td><a
+											th:href="@{/detailPost/{bp.board_num}/{bp.post_num}(bp.board_num=${bp.board_num}, bp.post_num=${bp.post_num})}"
+											th:text="${bp.post_title}"></a></td>
+										<td th:text="${bp.post_hit}"></td>
+									</tr>
+								</tbody>
+							</table>
+						</div>
+					</div>
+
+					<!-- 내가 쓴 리뷰 -->
+					<div id="myReviewBox" class="detailBox">
+						<div id="myReviewTitleBox">
+							<h6 id="myReviewTitle">내가 쓴 리뷰</h6>
+							<hr />
+						</div>
+						<div id="myReviewTableBox">
+							<table id="myReview" class="table">
+								<thead>
+									<tr>
+										<td>글번호</td>
+										<td>글제목</td>
+										<td>조회수</td>
+									</tr>
+								</thead>
+								<tbody>
+									<tr th:each="br,i:${myReview}">
+										<td th:text="${i.index+1}"></td>
+										<td><a
+											th:href="@{/detailPost/{br.board_num}/{br.post_num}(br.board_num=${br.board_num},br.post_num=${br.post_num})}"
+											th:text="${br.post_title}"></a></td>
+										<td th:text="${br.post_hit}"></td>
+									</tr>
+								</tbody>
+							</table>
+						</div>
+					</div>
+
+					<!-- 내 플랜 -->
+					<div id="myPlanBox" class="detailBox">
+						<div id="myPlanTitleBox">
+							<h6 id="myPlanTitle">내 플랜</h6>
+							<hr />
+						</div>
+						<div id="myPlanTableBox">
+							<button class="btn btn-success"><a href="/plan/insertPlan">내 플랜 보러가기 !</a></button>
+						</div>
+					</div>
+
+					<!-- 내 찜 리스트 -->
+					<div id="myDibBox" class="detailBox">
+						<div id="myDibTitleBox" class="table">
+							<h6 id="myDibTitle">내 찜 리스트</h6>
+							<hr />
+						</div>
+						<div id="myDibTableBox">
+							<table id="myDib" class="table">
+								<thead>
+									<tr>
+										<td>번호</td>
+										<td>이름</td>
+										<td>주소</td>
+									</tr>
+								</thead>
+								<tbody>
+									<tr th:each="ds, i: ${dib}">
+										<td th:text="${i.index+1}"></td>
+										<td><a th:href="@{'/place/detailPlace/'+${ds.place.place_num}}"
+											th:text="${ds.place.place_name}"></a></td>
+										<td th:text="${ds.place.place_addr}"></td>
+									</tr>
+								</tbody>
+							</table>
+						</div>
+					</div>
+
+					<!-- 예약 및 결제 내역 -->
+					<div id="myReservationBox" class="detailBox">
+						<div id="myReservationTitleBox">
+							<h6 id="myReservationTitle">예약 및 결제 내역</h6>
+							<hr />
+						</div>
+						<table id="myReservation" class="table">
+							<thead>
+								<tr>
+									<td>날짜</td>
+									<td>결제 내역</td>
+									<td>가격</td>
+								</tr>
+							</thead>
+							
+							<tbody>
+								<tr th:each="r: ${reservation}">
+									<td
+										th:text="|${r.reservation_checkin_date} ~ ${r.reservation_checkout_date}|"></td>
+									<td th:text="${r.place.place_name}"></td>
+									<td th:text="${r.reservation_price}"></td>
+								</tr>
+							</tbody>
+						</table>
+					</div>
+				</div>
+				<!-- account 영역 -->
+				<div id="accountContainer" style="padding: 0.5em 0">
+					<!-- account title -->
+					<div id="accountTitleBox" class="bigTitleBox">ACCOUNT</div>
+
+					<!-- 내 정보 수정 -->
+					<div id="myModifyBox" class="detailBox">
+						<div id="myModifyTitleBox">
+							<h6 id="myModifyTitle">내 정보 수정</h6>
+							<hr />
+						</div>
+
+						<div id="userFormBox"
+							style="display: flex; justify-content: center;">
+							<form action="/updateUserInfo" method="post"
+								style="position: relative" enctype="multipart/form-data">
+								<!-- 안보이지만 전달되는 값 -->
+								<input name="user_num" type="text"
+									th:value="${session.user_num}" style="display: none"> <input
+									name="user_role" type="text" th:value="${user.user_role}"
+									style="display: none"> <input type="text"
+									name="user_id" th:value="${user.user_id}" style="display: none" />
+								<input type="text" name="user_pwd" th:value="${user.user_pwd}"
+									style="display: none" />
+
+								<!-- 이미지 파일 수정 -->
+								<div class="form-group" style="padding-bottom: 1em">
+									<label for="formFile" class="form-label">사용자 사진 </label> <input
+										name="uploadFile" type="file" id="uploadPic" 
+										class="form-control" />
+								</div>
+
+								<!-- 핸드폰 번호 -->
+								<div class="form-group">
+									<label for="formFile">핸드폰 번호: <input type="text"
+										name="user_phone" th:value="${user.user_phone}" />
+								</div>
+
+								<!-- 닉네임 -->
+								<div class="form-group">
+									<label for="formFile">닉네임: <input type="text"
+										name="user_nick" th:value="${user.user_nick}" />
+								</div>
+
+								<div id="modifyBtnBox" style="position: absolute; right: 0;">
+
+									<input type="submit" value="수정" id="modifyBtn"
+										class="btn btn-success" />
+								</div>
+							</form>
+						</div>
+
+					</div>
+
+					<!-- 강아지 목록 -->
+					<div id="myDogBox" class="detailBox">
+						<div id="myDogTitleBox"
+							style="display: flex; justify-content: space-between; padding-top: 4em">
+							<h6 id="myDogTitle">강아지 목록</h6>
+							<button id="addDogBtn" class="btn btn-success"
+								onclick="window.open('/addDog', '강아지 추가', 'width=700, height=700, location=no, status=no, scrollbars=yes');">+</button>
+						</div>
+						<hr />
+
+						<div id="myDogTableBox">
+							<table id="myDog" class="table">
+								<thead>
+									<tr>
+										<td>번호</td>
+										<td>이름</td>
+										<td>성별</td>
+										<td>중성화 여부</td>
+										<td>나이</td>
+										<td>무게</td>
+
+									</tr>
+								</thead>
+								<tbody>
+									<tr th:each="dg,i:${dogs}">
+										<td style="display: none" th:text="${dg.dog_num}"></td>
+										<td th:text="${i.index+1}"></td>
+										<td th:text="${dg.dog_name}"></td>
+										<th:block th:switch="${dg.dog_gender}">
+											<td th:case="1" th:text="남"></td>
+											<td th:case="0" th:text="여"></td>
+										</th:block>
+										<th:block th:switch="${dg.dog_desexed}">
+											<td th:case="1" th:text="유"></td>
+											<td th:case="0" th:text="무"></td>
+										</th:block>
+										<td th:text="${dg.dog_age}"></td>
+										<td th:text="|${dg.dog_weight}kg|"></td>
+										<td><input type="button"
+											class="deleteDogBtn btn btn-success" value="X">
+										<td>
+									</tr>
+								</tbody>
+							</table>
+						</div>
+
+					</div>
+
+				<!-- 회원 탈퇴 -->
+					<div id="myRetireBox" class="detailBox" style="position: relative;">
+						<div id="myRetireTitleBox">
+							<h6 id="myRetireTitle">회원탈퇴</h6>
+							<hr />
+						</div>
+						<button id="myRetireBtn" style="position: absolute; right: 0" class="btn btn-success">탈퇴</button>
+						<input type="hidden" id="user_num" th:value=${session.user_num}>
+					</div>
+				</div>
+			</div>
+			<!--오른쪽 본문 영역 끝  -->
+
+
+		</div>
+
+		</div>
+		<!-- 전체 컨테이너 끝 -->
+	</main>
+
+	<script type="text/javascript">
+	var user={};
+	user['user_num']=parseInt(document.getElementById('user_num').value); 
+		$(".deleteDogBtn").click(function() {
+
+			var str = ""
+			var tdArr = new Array(); // 배열 선언
+			var deleteBtn = $(this);
+
+			// deleteBtn.parent() : checkBtn의 부모는 <td>이다.
+			// deleteBtn.parent().parent() : <td>의 부모이므로 <tr>이다.
+			var tr = deleteBtn.parent().parent();
+			var td = tr.children();
+			//var dog_num = parseInt(td.getElementById("dog_num").text());
+			var dog_num = td.eq(0).text();
+
+			var temp = {};
+			temp['dog_num'] = parseInt(dog_num);
+			console.log(dog_num);
+			console.log(temp);
+			$.ajax({
+				url : "/deleteDog",
+				data : temp,
+				success : function() {
+					alert("삭제에 성공하였습니다.");
+					window.location.reload();
+				}
+			})
+		});
+
+		$("#uploadPic").change(function() {
+			var fileVal = $("#uploadPic");
+			var files = fileVal[0].files;
+			console.log(files);
+			console.log(fileVal);
+		});
+		
+		
+		$("#myRetireBtn").click(function(){
+			
+			
+			$.ajax({
+				url : "/retireUser",
+				data: user,
+				success : function(data){
+					alert("탈퇴되었습니다.")
+					location.href="/main";
+				}
+				
+				
+			})
+			
+		
+		})
+
+		/* 	function myBoardTitleClick(data){
+				var offset =$("#myBoardTitle").offset();
+				$('html').animate({scrollTop : offset.top}, 400);
+			} */
+	</script>
+</body>
+</html>

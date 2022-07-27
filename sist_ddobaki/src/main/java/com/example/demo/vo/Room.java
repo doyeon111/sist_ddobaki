@@ -23,15 +23,20 @@ import lombok.Data;
 public class Room {
 	
 	@Id
+	//@Column(name="room_num")
 	private int room_num;
-	
-	@Column
-	private int room_type_num;
-	@Column(nullable = false)
-	private int room_price;
 
-	@JsonIgnore
-	@ManyToOne(fetch=FetchType.EAGER)
+	//@Column(name="room_type_num")
+	private int room_type_num;
+
+	
+	//@Column(name="room_price")
+	private int room_price;
+	
+	//@Column(name="room_name")
+	private String room_name;
+
+	@ManyToOne
 	@JoinColumn(name="place_num", insertable=true, updatable=true)
 	private Place place;
 	

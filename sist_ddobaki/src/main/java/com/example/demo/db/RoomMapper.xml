@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="room">
+  <select id="findAll" resultType="roomVO">
+    select * from room order by room_num
+  </select>
+  
+  <select id="getAvailable" resultType="roomVO">
+  	select room_num, room_type_num, room_name, room_price 
+	from 
+	(select room_num, room_type_num, room_name, room_price
+	from room
+	where room_num in (select room_num from room where place_num=#{place_num})) a
+	where a.room_num not in
+	(select room_num from reservation where(#{reservation_checkin_date} between to_char(reservation_checkin_date,'yyyy-mm-dd') and to_char(reservation_checkout_date, 'yyyy-mm-dd')) or
+	(#{reservation_checkout_date} between to_char(reservation_checkin_date,'yyyy-mm-dd') and to_char(reservation_checkout_date, 'yyyy-mm-dd')) and place_num=#{place_num}) order by room_num
+  </select>
+</mapper>

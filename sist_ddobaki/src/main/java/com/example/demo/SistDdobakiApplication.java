@@ -19,5 +19,10 @@ public class SistDdobakiApplication {
     public JPAQueryFactory jpaQueryFactory(EntityManager em) {
         return new JPAQueryFactory(em);
     }
+	
+	@Bean(name = "uploadPath")
+	public String uploadPath() {
+		return "c:/day0720/sist_ddobaki/src/main/resources/static/images/";
+	}
 
 }

@@ -1,6 +1,7 @@
 package com.example.demo.vo;
 
-import java.util.Date;
+
+import java.sql.Date;
 import java.util.List;
 
 import javax.persistence.CascadeType;
@@ -17,6 +18,8 @@ import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
+
+import org.springframework.format.annotation.DateTimeFormat;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -40,21 +43,26 @@ public class Reservation {
 	@Column(columnDefinition = "number default 0", nullable = false)
 	private int reservation_meal_cnt;
 	
-	@Column(nullable = false)
+	@Column(nullable = false) 
 	private int reservation_price;
+	 
+	//@Column(name="reservation_checkin_date")
+	//@Temporal(TemporalType.DATE)
+	//@DateTimeFormat(pattern = "yyyy-MM-dd")
+	//@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd", timezone = "Asia/Seoul")
+	private String reservation_checkin_date;
 	
-	@Column(nullable = false)
-	@Temporal(TemporalType.DATE)
-	private Date reservation_checkin_date;
 	
-	@Column(nullable = false)
-	@Temporal(TemporalType.DATE)
-	private Date reservation_checkout_date;
+	//@Column(name="reservation_checkout_date")
+	//@Temporal(TemporalType.DATE)
+	//@DateTimeFormat(pattern = "yyyy-MM-dd")
+	//@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd", timezone = "Asia/Seoul")
+	private String reservation_checkout_date;
 	
 	@Column(columnDefinition = "number default 1", nullable = false)
 	private int reservation_people_cnt;
 	
-	@Column(columnDefinition = "number default 0", nullable = false)
+	@Column(columnDefinition = "number default 0", nullable = false) 
 	private int reservation_s_dog_cnt;
 	
 	@Column(columnDefinition = "number default 0", nullable = false)
@@ -85,3 +93,4 @@ public class Reservation {
 	//참조 받아야 하는 키
 	//user_num, place_num, room_num
 }
+

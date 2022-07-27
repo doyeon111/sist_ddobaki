@@ -13,14 +13,20 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
 
-import org.hibernate.annotations.ColumnDefault;
-import org.hibernate.annotations.OnDelete;
-import org.hibernate.annotations.OnDeleteAction;
-import org.springframework.lang.Nullable;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
+import lombok.ToString;
 
+
+
+@AllArgsConstructor
+@NoArgsConstructor
 @Data
 @Entity
 @Table(name="board")
@@ -28,7 +34,7 @@ public class Board {
 	@Id
 	private int post_num;
 	//@Column(nullable = false) ==>not null
-	
+
 	@Column(nullable = false)
 	private int board_num;
 	
@@ -39,30 +45,28 @@ public class Board {
 	private String post_content;
 	
 	@Column(nullable = false)
+	@Temporal(TemporalType.DATE)
 	private Date post_regdate;
 	
-	@Column(columnDefinition = "integer default 0")
+	@Column(nullable = false, columnDefinition = "number default 0")
 	private int post_hit;
 		
-	//user_num과 다대일 fk
+	//user_num과 다대일 fk		//findAll 찍을때 안나와서 jsonignore 삭제
+	
 	@ManyToOne
-	@JoinColumn(name="user_num", insertable = true, updatable = true,nullable = false)
+	@JoinColumn(name="user_num", insertable = true, updatable = true, nullable = false)
 	private UserInfo userinfo;
 	
-	
 	//place_num과 다대일/fk/null허용 
+	@JsonIgnore
+	//@SuppressWarnings(value={"all"})
 	@ManyToOne
-	@JoinColumn(name="place_num",insertable = true,updatable = true, nullable = true)
+	@JoinColumn(name="place_num",insertable = true, updatable = true, nullable = true)
 	private Place place;
-	
-	
+
+	@JsonIgnore
 	@Column(nullable = true)
-	@OneToMany(mappedBy="board", fetch=FetchType.LAZY,cascade = CascadeType.REMOVE)
-	private List<BoardImage> boardimage;
-	
-	
-	@Column(nullable = true)
-	@OneToMany(mappedBy="board", fetch=FetchType.LAZY,cascade = CascadeType.REMOVE)
+	@OneToMany(mappedBy="board", fetch=FetchType.LAZY, cascade = CascadeType.REMOVE)
 	private List<Reply> reply;
-	
+
 }

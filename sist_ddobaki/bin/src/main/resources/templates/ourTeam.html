@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.w3.org/1999/xhtml"
+	xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+
+<head>
+<!-- css reset -->
+<link rel="stylesheet"
+	href="https://cdn.jsdelivr.net/npm/reset-css@5.0.1/reset.min.css" />
+
+<!-- bootstrap -->
+<link rel="stylesheet"
+	href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css"
+	integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3"
+	crossorigin="anonymous" />
+<meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<!-- fragment css -->
+<link rel="stylesheet" th:href="@{/styles/common.css}">
+
+<!-- font-awesome icon -->
+<link rel="stylesheet"
+	href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css" />
+<title>Document</title>
+</head>
+<style>
+.title>span {
+	font-size: 2em;
+	font-weight: bold;
+	color: gray;
+}
+
+.teamCard {
+	background: white;
+	width: 200px;
+	margin: 20px;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	padding: 5px;
+	box-shadow: 0 4px 5px rgba(0, 0, 0, 0.6)
+}
+
+.name {
+	text-align: center;
+}
+
+h4 {
+	font-weight: bold;
+}
+
+.memberInfoText>a {
+	color: black;
+	font-size: 10px;
+	text-decoration: none;
+}
+
+.memberInfoText {
+	padding: 6px;
+}
+
+.memberImg {
+	width: 90px;
+	height: 90px;
+	margin: 20px;
+	background: black;
+	overflow: hidden;
+	border: 3px solid #00A388;
+	box-sizing: border-box;
+}
+
+.memberImg>img {
+	width: 100%;
+	height: 100%;
+}
+
+.github {
+	vertical-align: center;
+}
+
+.hashBox {
+	display: flex;
+	flex-wrap: wrap;
+}
+
+.hash {
+	border-radius: 5px;
+	color: white;
+	padding: 0 4px;
+	margin: 2px;
+}
+
+.hash>span {
+	font-size: 14px;
+	font-weight: bold;
+}
+</style>
+
+<body>
+	<!-- header fragment 사용 -->
+	<th:block th:replace="fragments/header :: headerFragment"></th:block>
+	<main>
+
+		<div id="mainContainer"
+			style="display: grid; place-items: center; min-height: 70vh;">
+			<div id="teamContainer" style="width: 80%;">
+				<!--  About Project   -->
+				<div id="projectTitle" class='title'>
+					<span>About Project</span>
+				</div>
+
+				<div id="projectContainer"
+					style="margin-bottom: 20px;">
+					<div id="projectLogBox"
+						style="width: 300px; height: 300px; overflow: hidden;  float:left">
+						<img src="logo.png" alt="" style="width: 100%; height: 100%;" />
+					</div>
+					<div id="projectIntroBox" style="vertical-align: middle;">
+						<p>&nbsp;국내에서도 반려동물 동반 여행에 대한 관심은 커지고 있다. 한국관광공사가 발표한 ‘2022 반려동물 동반
+							여행 실태조사’에 의하면 응답자 절반 이상이 최근 1년 내로 반려견 동반 국내 여행을 경험했다. 당일 여행을 경험한
+							응답자는 65.7%로, 연평균 경험 횟수는 2.1회로 나타났다. 특히 74.4%가 ‘향후 반려견 동반 국내 여행
+							의향이 있다’고 답하는 등 반려동물 동반 여행 시장의 가능성을 볼 수 있었다. 하지만 반려동물과 함께하는 여행에는
+							여러 제약이 따른다. 조사 결과 응답자들은 반려동물과 함께하는 여행 시 겪는 어려움을 묻는 질문에 ‘동반 가능
+							숙박시설 부족’(55%), ‘동반 가능 식음 시설 부족’(49.5%), ‘동반 가능 관광지 부족’(42.3%) 등을
+							꼽았다. 반려동물과 함께 시간을 보낼 수 있는 인프라 시설 부족이 여행의 주요 장애요인으로 작용하는 모습이었다. 
+							위 기사 내용과 같이 반려동물 관련 산업은 점점 커져감에 따라 사용자 또한 이를 공유하고 이야기를 나눌 공간이 필요하다고 생각이 들어
+							'반려동물 여행 문화를 위한 또바기 커뮤니티'으로 프로젝트를 기획하게 되었다.</p>
+					</div>
+				</div>
+
+
+				<!--  About Team      -->
+				<div id="teamCardTitle" class="title" style="padding-top:8em">
+					<span>About Team</span>
+				</div>
+				<div id="teamCardContainer"
+					style="display: flex; justify-content: center;">
+
+					<div class="teamCardBox"
+						style="display: flex; flex-direction: row; flex-wrap: wrap; justify-content: space-around">
+						<!--team card1 -->
+						<div class="teamCard">
+							<div class="memberImg rounded-circle">
+								<img src="userImage/진주사진.png" alt="">
+							</div>
+							<div class="memberInfo">
+								<div class="name memberInfoText">
+									<h4>이진주</h4>
+								</div>
+								<div class="hashBox memberInfoText">
+									<div class="hash" style="background: #53BF9D">
+										<span>#ENTP</span>
+									</div>
+									<div class="hash" style="background: #F94C66">
+										<span>#팀장</span>
+									</div>
+									<div class="hash" style="background: #BD4291">
+										<span>#리더쉽</span>
+									</div>
+
+
+								</div>
+								<div class="github memberInfoText">
+									<i class="fa-brands fa-github"></i> <a
+										href="https://github.com/pearlrabbit">https://github.com/pearlrabbit</a>
+								</div>
+
+							</div>
+
+						</div>
+						<!--team card2 -->
+						<div class="teamCard">
+							<div class="memberImg rounded-circle">
+								<img src="userImage/주희사진.png" alt="">
+							</div>
+							<div class="memberInfo">
+								<div class="name memberInfoText">
+									<h4>고주희</h4>
+								</div>
+								<div class="hashBox memberInfoText">
+									<div class="hash" style="background: #53BF9D">
+										<span>#INTP</span>
+									</div>
+									<div class="hash" style="background: #F94C66">
+										<span>#끈기</span>
+									</div>
+									<div class="hash" style="background: #BD4291">
+										<span>#성실</span>
+									</div>
+
+								</div>
+								<div class="github memberInfoText">
+									<i class="fa-brands fa-github"></i> <a
+										href="https://github.com/juheeko8524">https://github.com/juheeko8524</a>
+								</div>
+
+							</div>
+
+						</div>
+						<!--team card3 -->
+						<div class="teamCard">
+							<div class="memberImg rounded-circle">
+								<img src="userImage/다정사진.png" alt="">
+							</div>
+							<div class="memberInfo">
+								<div class="name memberInfoText">
+									<h4>김다정</h4>
+								</div>
+								<div class="hashBox memberInfoText">
+									<div class="hash" style="background: #53BF9D">
+										<span>#INFP</span>
+									</div>
+									<div class="hash" style="background: #F94C66">
+										<span>#따뜻함</span>
+									</div>
+									<div class="hash" style="background: #BD4291">
+										<span>#호기심</span>
+									</div>
+
+
+								</div>
+								<div class="github memberInfoText">
+									<i class="fa-brands fa-github"></i> <a
+										href="https://github.com/rlaekwjd6412">https://github.com/rlaekwjd6412</a>
+								</div>
+
+							</div>
+
+						</div>
+						<!--team card4 -->
+						<div class="teamCard">
+							<div class="memberImg rounded-circle">
+								<img src="userImage/도연사진.png" alt="">
+							</div>
+							<div class="memberInfo">
+								<div class="name memberInfoText">
+									<h4>김도연</h4>
+								</div>
+								<div class="hashBox memberInfoText">
+									<div class="hash" style="background: #53BF9D">
+										<span>#ISTJ</span>
+									</div>
+									<div class="hash" style="background: #F94C66">
+										<span>#성장</span>
+									</div>
+									<div class="hash" style="background: #BD4291">
+										<span>#도전</span>
+									</div>
+
+
+								</div>
+								<div class="github memberInfoText">
+									<i class="fa-brands fa-github"></i> <a
+										href="https://github.com/doyeon111">https://github.com/doyeon111</a>
+								</div>
+
+							</div>
+
+						</div>
+						<!--team card5 -->
+						<div class="teamCard">
+							<div class="memberImg rounded-circle">
+								<img src="userImage/소윤사진.png" alt="">
+							</div>
+							<div class="memberInfo">
+								<div class="name memberInfoText">
+									<h4>김소윤</h4>
+								</div>
+								<div class="hashBox memberInfoText">
+									<div class="hash" style="background: #53BF9D">
+										<span>#ENTJ</span>
+									</div>
+									<div class="hash" style="background: #F94C66">
+										<span>#긍정</span>
+									</div>
+									<div class="hash" style="background: #BD4291">
+										<span>#열정맨</span>
+									</div>
+
+
+								</div>
+								<div class="github memberInfoText">
+									<i class="fa-brands fa-github"></i> <a
+										href="https://github.com/iiolo">https://github.com/iiolo</a>
+								</div>
+
+							</div>
+
+						</div>
+						<!--team card6-->
+						<div class="teamCard">
+							<div class="memberImg rounded-circle">
+								<img src="userImage/예은사진.png" alt="">
+							</div>
+							<div class="memberInfo">
+								<div class="name memberInfoText">
+									<h4>황예은</h4>
+								</div>
+								<div class="hashBox memberInfoText">
+									<div class="hash" style="background: #53BF9D">
+										<span>#INTJ</span>
+									</div>
+									<div class="hash" style="background: #F94C66">
+										<span>#전략가</span>
+									</div>
+									<div class="hash" style="background: #BD4291">
+										<span>#분석가</span>
+									</div>
+
+
+								</div>
+								<div class="github memberInfoText">
+									<i class="fa-brands fa-github"></i> <a
+										href="https://github.com/yanapang">https://github.com/yanapang</a>
+								</div>
+
+							</div>
+
+						</div>
+
+					</div>
+					<!--teamCardBox 끝-->
+
+				</div>
+			</div>
+		</div>
+
+	</main>
+</body>
+
+</html>

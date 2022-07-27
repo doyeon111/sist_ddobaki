@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.w3.org/1999/xhtml" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+<meta charset="UTF-8">
+<title>Insert title here</title>
+
+<!-- bootstrap -->
+<link rel="stylesheet"
+	href="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/css/bootstrap.min.css"
+	integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm"
+	crossorigin="anonymous">
+<link rel="stylesheet" th:href="@{/styles/common.css}">
+
+<!-- jquery -->
+<script type="text/javascript"
+	src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+<!-- jquery 이미지 슬라이드  -->
+<link rel="stylesheet" type="text/css"
+	href="//cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick.css" />
+<link rel="stylesheet" type="text/css"
+	href="//cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick-theme.css" />
+
+<style type="text/css">
+img.thumbnail {
+	width: 100%;
+	height:100%;
+	
+}
+
+#placeImgBox{
+	width: 130px;
+	height:130px;
+	overflow: hidden;
+	margin-bottom: 2px;
+	background: black;
+}
+
+#placeImgTitleBox {
+	margin: 0 2em;
+}
+
+#place_name {
+	background-color: #307470;
+	color: white;
+	text-align: center;
+	padding: 0.2em;
+	border-radius: 0.5em;
+}
+#img{
+
+	width:100vw;
+  height:300px;
+ margin: 0 auto;
+  display:inline-block;
+  background:white;
+  border-radius: 5px;
+  opacity: 0.8;
+}
+
+
+#btn{
+border: none;
+background-color: white; 
+color: #307470;
+font-weight: bold;
+cursor: pointer;
+}
+
+</style>
+</head>
+<body>
+<th:if="${user_nick != null}">
+	<p th:text="${user_nick}"><span>님 안녕하세요</span></p>
+	</th:if>
+	<!-- header fragment 사용 -->
+	<th:block th:replace="fragments/header :: headerFragment"></th:block>
+
+	<!-- 이미지 슬라이드 -->
+	<div id="imgbox" style="margin-top:10px">
+        
+		<div id="slider-div">
+    
+			<div id="img">
+				<img src="/mainImage/mainImage3.png" alt="mainImage1"
+					style="width: 100%;
+	height: 100%;">
+			</div>
+			<div id="img">
+				<img src="/mainImage/mainImage2.png" alt="mainImage2"
+					style="width: 100%;
+	height: 100%;">
+			</div>
+			<div id="img">
+				<img src="/mainImage/mainImage1.png" alt="mainImage3"
+					style="width: 100%;
+	height: 100%;">
+			</div>
+		
+		</div>
+			  
+	</div>
+
+	<div id="mainContainer" style="height: 35vh; display: flex;">
+		<div id="placeBox"
+			style="width: 50%; height: 100%; background-color: #79BD8F; ">
+			<div id="placeSelect" style="display: flex; margin: 1em">
+				<!-- 지역 선택 박스 -->
+				<select id="place_region_num" style="height: min-content;"
+					onchange=changeValue()>
+					<option value="1">강원</option>
+					<option value="2">서울</option>
+					<option value="3">경기</option>
+				</select>
+				<h5 style="padding-left: 0.3em; color: white">Place Top 3</h5>
+			</div>
+			<div id="placeList" style="display: flex; justify-content: center"></div>
+
+		</div>
+		<div id="boardBox"
+			style="width: 50%; height: 100%; background-color: #BEEB9F">
+			
+			<div id="boardTitleBox" style="display:flex; margin: 10px">
+
+				<h5 style="padding-left: 0.3em; color: white">오늘의 HOT 게시물</h5>
+				<!-- 게시판 선택 박스 -->
+				<select id="board_num" style="height: min-content; margin-left:10px;"
+					onchange=changeValue1()>
+					<option value="2">Community</option>
+					<option value="3">Review</option>
+				</select>
+			</div>
+			
+			<div id="boardTableBox">
+
+				<table id="boardTable" class="table table-hover" style="background:white; width:90%; margin: 0 auto;">
+					<!-- <tr th:each="b, i : ${board}">
+					<td th:text= ${i.index+1}></td>
+					<td th:text ="${b.post_name}"></td>
+				</tr> -->
+				</table>
+			</div>
+
+		</div>
+	</div>
+	<span></span>
+	<!-- footer fragment 사용 -->
+	<th:block th:replace="fragments/footer :: footerFragment"></th:block>
+  <script type="text/javascript" src="//code.jquery.com/jquery-1.11.0.min.js"></script>
+  <script type="text/javascript" src="//code.jquery.com/jquery-migrate-1.2.1.min.js"></script>
+<script type="text/javascript"
+	src="//cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick.min.js"></script>
+	<script type="text/javascript">
+	
+		$(document).ready(function() {
+		
+		$('#slider-div').slick({
+
+			arrows : false,
+			dots : true,
+		});
+		
+			
+			
+			//place 타입별 조회수 Top 3 
+			$.ajax({
+				
+				url: "/mainPlaceImg",
+				data: {place_region_num:1},
+				success:function(data){
+					console.log(data);
+					data.sort(function(a,b){
+						return parseInt(b.place_hit) - parseInt(a.place_hit)
+					})
+			        var str = '';
+		            $.each(data , function(i){
+		            	str += '<div id="placeImgTitleBox">';
+		            	str += '<a href="place/detailPlace/'+data[i].place_num+'"><div id="placeImgBox"><img alt = "'+ data[i].place_thumbnail+'" src="/place_thumbnail/' + data[i].place_thumbnail + '" class = "thumbnail"/></div></a><div id="place_name">'+data[i].place_name+'</div>';
+		                str += '</div>';
+		                if ( i == 2 ) {
+		                    return false;
+		                }
+		           });
+		           $("#placeList").append(str); 
+		        },
+		        error : function(){
+		            alert("error");
+		        }
+						
+			}); 
+			
+			// board 종류 별 post 조회수 Top 3
+			$.ajax({
+				
+				url: "/mainByBoard",
+				data: {board_num:2},
+				success:function(data){
+					console.log(data);
+					data.sort(function(a,b){
+						return parseInt(b.post_hit) - parseInt(a.post_hit)
+					})
+			 
+		            var	str = '<tr>';
+		            $.each(data , function(i){
+		            	str += '<td>'+(i+1)+'</td><td><a href="/detailPost/'+data[i].board_num+'/'+data[i].post_num+'">' + data[i].post_title + '</a></td>';
+		                str += '</tr>';
+		                if ( i == 2 ) {
+		                    return false;
+		                }
+		           });
+		           $("#boardTable").append(str); 
+		        },
+		        error : function(){
+		            alert("error");
+		        }
+						
+			}); 
+		})
+		
+		
+		// select box 값 변경 시 place 타입별 조회수 Top 3 
+		var temp={};
+		function changeValue(){
+			$("#placeList").empty();
+			var compID= document.getElementById("place_region_num");
+			temp['place_region_num']= compID.options[compID.selectedIndex].value;
+			// {region:1}
+			// {array:hits desc}
+			console.log(temp);
+			
+			$.ajax({
+				
+				url: "/mainPlaceImg",
+				data: temp,
+				success:function(data){
+					console.log(data);
+					data.sort(function(a,b){
+						return parseInt(b.place_hit) - parseInt(a.place_hit)
+					})
+						var str= '';
+		            $.each(data , function(i){
+		            	str+= '<div id="placeImgTitleBox">';
+		            	str += '<a href="place/detailPlace/'+data[i].place_num+'"><div id="placeImgBox"><img alt = "'+ data[i].place_thumbnail+'" src="/place_thumbnail/' + data[i].place_thumbnail + '" class = "thumbnail"/></div></a><div id="place_name">'+data[i].place_name+'</div>';
+		                str += '</div>';
+		                if ( i == 2 ) {
+		                    return false;
+		                }
+		           });
+		           $("#placeList").append(str); 
+		        },
+		        error : function(){
+		            alert("error");
+		        }
+						
+			}); 
+			
+		}
+		
+		// select box 값 변경 시 board 종류 별 post 조회수 Top 3
+		var temp1={};
+		function changeValue1(){
+			$("#boardTable").empty();
+			var compID= document.getElementById("board_num");
+			temp1['board_num']= compID.options[compID.selectedIndex].value;
+			// {region:1}
+			// {array:hits desc}
+			console.log(temp1);
+			
+			$.ajax({
+				
+				url: "/mainByBoard",
+				data: temp1,
+				success:function(data){
+					console.log(data);
+					data.sort(function(a,b){
+						return parseInt(b.post_hit) - parseInt(a.post_hit)
+					})
+					 var str = '<tr>';
+		            $.each(data , function(i){
+		            	str += '<td>'+(i+1)+'</td><td><a href="/detailPost/'+data[i].board_num+'/'+data[i].post_num+'">' + data[i].post_title + '</a></td>';
+		                str += '</tr>';
+		                if ( i == 2 ) {
+		                    return false;
+		                }
+		           });
+		           $("#boardTable").append(str); 
+		        },
+		        error : function(){
+		            alert("error");
+		        }
+						
+			}); 
+			
+		}
+	</script>
+</body>
+</html>

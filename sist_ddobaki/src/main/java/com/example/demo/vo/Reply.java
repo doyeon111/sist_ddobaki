@@ -8,23 +8,21 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
-import org.hibernate.annotations.OnDelete;
-import org.hibernate.annotations.OnDeleteAction;
-
 import lombok.Data;
 
 @Entity
 @Data
 @Table(name="reply")
 public class Reply {
+
 	@Id
 	private int	reply_num;
-	
+
 	@ManyToOne
 	@JoinColumn(name="post_num", insertable = true, updatable = true, nullable=false)
 	private Board board;
 	
-	@OneToOne
+	@ManyToOne
 	@JoinColumn(name="user_num", insertable = true, updatable = true, nullable=false)
 	private UserInfo userinfo;	
 	
@@ -38,5 +36,12 @@ public class Reply {
 	private int	reply_step;
 	
 	@Column(length=4000)
-	private String reply_content;	
+	private String reply_content;
+	
+	@Column(nullable = false, columnDefinition = "number default 0")
+	private int isDeleted;
+	
+	@Column(nullable = false, columnDefinition = "number default 0")
+	private int ref_reply_num;
+
 }

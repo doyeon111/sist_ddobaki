@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html xmlns:th = "http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<title>Insert title here</title>
+<!-- icon -->
+
+
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-0evHe/X+R7YkIZDRvuzKMRqM+OrBnVFBL6DOitfPri4tjfHxaWutUpFmBp4vmVor" crossorigin="anonymous">
+<link rel="stylesheet" th:href="@{/styles/common.css}">
+<style type="text/css">
+
+.replyInfoIndex>p{
+	display:inline-block;
+}
+
+.replyList>p{
+
+	display:inline-block;
+}
+.replyParent>span{
+	display:inline-block;
+}
+
+.profilebox--photo {
+    width: 60px;
+    height: 60px;
+    float: left;
+    margin: 3px;
+    overflow: hidden;
+    border-radius: 50px;
+    border: 1pt solid #E6E6E6;
+    /*box-shadow: 1px 1px #CDCECF;*/
+}
+
+.profilebox--photo > img {
+    width: inherit;
+    height: inherit;
+    object-fit: cover;
+}
+
+.miniInfo > p{
+	display:inline-block;
+	font-size: small;
+}
+fieldset{
+margin: auto;
+width: 80%;
+border: 2px solid #73AD21;
+}
+.profilebox {
+	height:50px;
+	float:inherit;
+	margin: auto 0;
+
+}
+#mainNick{
+font-size : 1.1em;
+}
+#replyNick{
+font-size:0.99em;
+color : grey;
+}
+
+#replyUserFile{
+	width: 40px;
+    height: 40px;
+    margin: 3px;
+    overflow: hidden;
+    border-radius: 50px;
+    border: 1pt solid #E6E6E6;
+    /*box-shadow: 1px 1px #CDCECF;*/
+}
+#replyR{
+font-size:0.88em;
+color : grey;
+}
+
+#subject{
+	font-size: xx-large;
+	margin-top: 30px
+}
+.container{
+	    height: auto;
+	    width: auto;	    
+}
+
+#content{
+font-size : 1.2em;
+
+}
+#btnDelete, #btnInsertReReply{
+font-size : 0.8em;
+background-color: white;
+}
+
+#placecardphoto{
+	width: 45px;
+    height: 45px;
+    float: left;
+    margin: 3px;
+    overflow: hidden;
+
+}
+.placecard {
+border-width: thin;
+
+}
+
+button{
+border-radius: 10px;
+border-style: solid;
+border-color: #6bba62;
+padding: 4px;
+background-color: #73AD21;
+opacity: 0.8;
+}
+
+</style>
+<script type="text/javascript" src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script th:inline="javascript">
+/*<![CDATA[*/
+	var rp=/*[[ ${rp} ]]*/
+	function getParentReplyInfo(reply_num){
+	console.log("대댓글 쓰기 버튼 클릭됨!");
+	console.log(reply_num);
+	$("#ref_reply_num").val(reply_num);
+	$("#replyForm").attr("action", "/board/insertReReplyOK/"+reply_num);
+	$.ajax({
+		url:"/board/insertReReply/"+reply_num,
+		//data:{reply_num:reply_num}, //=>이건 쿼리스트링방식!!
+		success:function(arr){
+			
+	}})
+	}
+
+	$(function(){
+		$("#subject").html(/*[[${b.post_title}]]*/);
+		$("#content").html(/*[[${b.post_content}]]*/);
+	});
+/*]]*/
+</script>
+</head>
+<!-- header fragment 사용 -->
+<th:block th:replace="fragments/header :: headerFragment"></th:block>
+
+<body>
+<fieldset>
+<div class="container">
+<div>
+<p id="subject"></p><hr>
+<div>
+<div class="profilebox">
+<div class="profilebox--photo">
+<img th:src="@{|/userImage/${b.userinfo.user_file}|}"></img>
+</div>
+<p><span th:text="${b.userinfo.user_nick}"></span></p>
+<div class="miniInfo">
+<p>조회수 : <span th:text="${b.post_hit}+1"></span></p>
+<p>작성일 : <span th:text="${b.post_regdate}"></span></p>
+</div>
+</div>
+</div>
+<th:block th:if="${b.board_num==3}">
+<hr>
+<div class="placecard">
+<img id="placecardphoto" src="/map/paws.png">
+<p><a th:text="${b.place.place_name}" th:href="@{'/place/detailPlace/'+${b.place.place_num}}"></a></p>
+<p>주소 : <span th:text="${b.place.place_addr}"></span></p>
+</div>
+</th:block>
+</div>
+<hr>
+<p id="content"></p>
+<hr>
+		<div class="replyList">
+		comment<br>
+			<tr th:each="rp:${reply_and_parent_list}">
+				<!-- <p th:text="${rp.reply_num}"></p> -->
+				<img th:src="@{|/userImage/${rp.userinfo.user_file}|}" id="replyUserFile"></img>
+				<p th:text="${rp.userinfo.user_nick}" id="mainNick"></p>
+				<p class="replyParent">
+				
+				
+				<div>			
+				<th:block th:if="${rp.reply_level==1}">
+							<span>ㄴ@</span>
+				<span th:text="${rp.parent_nick}" id="replyNick" ></span>
+				</th:block>
+				</div>
+				
+				&nbsp;&nbsp;&nbsp;&nbsp;
+				
+				<th:block th:unless="${rp.reply_level==1}">
+				<span></span>
+				</th:block>
+				</p>
+				<p th:text="${rp.reply_content}"></p>
+				<th:block th:if="${rp.isDeleted==0}">
+					<p>
+						<button th:if="${#authentication.name==rp.userinfo.user_id}" id="btnDelete"><a th:href="@{/board/deleteReply/{reply_num}(reply_num=${rp.reply_num})}">삭제</a></button>
+					</p>
+					<p>
+						<button id="btnInsertReReply" type="button" th:myReplyNum="${rp.reply_num}" th:onclick="getParentReplyInfo(this.getAttribute('myReplyNum'))">답글쓰기</button>
+					</p>
+				</th:block>
+				<th:block th:unless="${rp.isDeleted==0}">
+					<p></p>
+					<p></p>
+				</th:block>
+				<br>
+			</tr>
+		</div>
+	<hr>
+<form id="replyForm" method="post" action="/board/insertReplyOK">
+	<input type="hidden" th:name="post_num" th:value="${b.post_num}">
+	<input type="hidden" th:name="board_num" th:value="${b.board_num}">
+	<input type="hidden" name="reply_num" id="ref_reply_num" value="0">
+	<!-- 사용자 : <select name="user_num">
+		<option> 사용자선택 </option>
+		<option th:each="u : ${user_list}"
+				th:value="${u?.user_num}"
+				th:utext="${u?.user_nick}"></option>
+		</select> -->
+	<input type="hidden" name="user_num" th:value="${user_num}">
+	<br>
+	<textarea id="reply_content" name="reply_content" rows="2" cols="90"></textarea>
+	<button type="submit" id="submit" name="submit">등록</button>
+</form>
+<hr>
+<th:block th:switch="${board_num}">
+    <button th:case="1"><a th:href="@{/listBoard/{board_num}(board_num=${1})}">목록</a></button>
+    <button th:case="2"><a th:href="@{/listBoard/{board_num}(board_num=${2})}">목록</a></button>
+    <button th:case="3"><a th:href="@{/listBoard/{board_num}(board_num=${3})}">목록</a></button>
+    <button th:case="4"><a th:href="@{/listBoard/{board_num}(board_num=${4})}">목록</a></button>
+</th:block>
+
+<button th:if="${#authentication.name==b.userinfo.user_id}"><a th:href="@{/board/updateBoard/{post_num}(post_num=${b.post_num})}">수정</a></button>
+<button th:if="${#authentication.name==b.userinfo.user_id}"><a th:href="@{/board/deleteBoard/{post_num}(post_num=${b.post_num})}">삭제</i></a></button>
+</div>
+</fieldset>
+<!-- footer fragment 사용 -->
+<th:block th:replace="fragments/footer :: footerFragment"></th:block>
+</body>
+</html>

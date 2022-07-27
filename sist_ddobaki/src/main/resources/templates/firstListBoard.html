@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html xmlns:th = "http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+
+<title>Insert title here</title>
+<!-- CSS only -->
+
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-0evHe/X+R7YkIZDRvuzKMRqM+OrBnVFBL6DOitfPri4tjfHxaWutUpFmBp4vmVor" crossorigin="anonymous">
+<link rel="stylesheet" th:href="@{/styles/common.css}">
+<style type="text/css">
+
+span{
+		display: inline-block;
+		margin: 5px;
+		cursor: pointer; 	
+	}
+	
+#paging{
+display: flex;
+  justify-content: center;
+}
+fieldset{
+	  margin: auto;
+	  width: 80%;
+	  border: 3px solid #73AD21;
+	  
+}
+
+
+th {
+  height: 70px;
+  padding: 15px;
+ font-size: 1.2em;
+  border-bottom: 3px solid #ddd;
+  
+
+}
+
+td{
+  border-bottom: 1px solid #ddd;
+	 padding: 10px;	
+
+}
+
+table {
+  width: 100%;
+  text-align: justify;
+  table-layout : fixed;
+ 
+}
+
+a:hover {
+   color: #73AD21;
+  text-decoration-line: underline;
+  text-decoration-color: #73AD21;
+ 
+ 
+
+}
+span:hover {
+  color: #73AD21;
+  text-decoration:underline;
+  border-style: solid;
+	border-radius: 5px;
+  border-color: #73AD21;
+  padding: 5px;
+
+
+background-color: #73AD21;
+  color: white;
+}
+
+	
+</style>
+<!-- JavaScript Bundle with Popper -->
+
+
+ 
+
+
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/js/bootstrap.bundle.min.js" integrity="sha384-pprn3073KE6tl6bjs2QrFaJGz5/SUsLqktiwsUTF55Jfv3qYSDhgCecCxMW52nD2" crossorigin="anonymous"></script>
+<script type="text/javascript" src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script th:inline="javascript">
+/*<![CDATA[*/
+		//유저 리스트 for 닉네임
+		//var userList=/*[[${userList}]]*/
+		//console.log(userList);
+	
+$(function(){
+	
+var arr; //페이징할때 쓸 list 담을 애
+var nick=[];
+
+	//페이징처리
+	var totalRecords=1;	
+	var totalPage=1;	
+	var pageSize=7;		//n개씩
+	var pageGroup=2;	//n페이지만큼 화면
+	
+	$.ajax({
+		url:"/getAllList",
+		success:function(list){	
+		arr=list;
+		
+		//console.log(list[3].post_title); //이렇게 하면 나와용		
+		
+		//console.log(arr.length);	//레코드 수 잘 나와용
+		
+		totalRecords = arr.length;
+		totalPage = Math.ceil(totalRecords/pageSize);	//ceil올림수
+		
+		console.log("여기 잘 나온건가욥?"+arr[2].userinfo.user_nick);
+		
+		/*
+		for(i=0;i<arr.length;i++){
+			if(arr[i].user_num == userList[i].user_num){
+				nick += userList[i].user_nick;
+			}
+		}
+		console.log(nick)
+			*/
+		printPage(1);	//현재 페이지에 보여줄 레코드
+		printPageNumber(1);	//현재페이지에서 보여줄 페이지번호
+		}		
+	});	
+	
+	
+	
+	
+
+	
+	
+	
+	//레코드 보여주기
+	function printPage(pageNUM){
+
+		$("#list").empty();
+		
+		//현재페이지에서 보여줄 시작/마지막 레코드
+		//인덱스 0부터 시작
+		var start = (pageNUM-1)*pageSize;
+		var end = start+pageSize-1;	
+		
+		
+		if(end>arr.length-1){
+			end=arr.length-1;			
+		}
+		
+		
+		
+		for(var i=start; i<=end; i++){
+			
+				//console.log(arr[i].board_num);
+				//console.log(arr[i].post_num);
+				$("#list").append("<tr>");
+				
+				$("#list").append("<td>"+arr[i].post_num+"</td>");
+				$("#list").append("<td>"+arr[i].userinfo.user_nick+"</td>");
+				$("#list").append("<td><a href=detailPost"+"/"+arr[i].board_num+"/"+arr[i].post_num+">"+arr[i].post_title+"</a></td>");				
+				$("#list").append("<td>"+arr[i].post_hit+"</td>");
+				$("#list").append("<td>"+arr[i].post_regdate+"</td>");
+				
+				$("#list").append("</tr>");										
+		}
+		
+		//console.log(arr[2].post_num); //잘 나와용
+		
+	}//printPage끝
+	
+	
+	function printPageNumber(pageNUM){
+		
+		$("#paging").empty();
+
+		//start=${T(Math).floor(boardList.number/10)*10 + 1} ://버림 취하김
+		var startPage = Math.floor((pageNUM-1)/pageGroup)*pageGroup  + 1 ; 	
+		var endPage = startPage + pageGroup - 1;
+		
+		//console.log("시작페이지: "+startPage);
+		//console.log("마지막페이지: "+endPage);	바뀌기 전까지 고정
+		
+	
+		if(endPage > totalPage){
+			endPage = totalPage;
+		}
+		
+		//console.log("시작: "+startPage);
+		
+		
+		if(startPage > 1){
+			var span = $("<span></span>").html("[<<]");
+			$(span).attr("page",startPage-1);
+			$("#paging").append(span);
+		}
+
+		for(i = startPage; i<=endPage ; i++){
+			var span = $("<span></span>").html(i);
+			$(span).attr("page",i);
+			$("#paging").append(span);					
+		}
+		
+	//ex>>
+		if(endPage < totalPage){
+			var span = $("<span></span>").html("[>>]");
+			$(span).attr("page",endPage+1); //속성읽기
+			$("#paging").append(span);
+		}
+	}//printPageNumber함수 끝
+		
+		
+	$(document).on("click", "span", function(){
+		var page = $(this).attr("page");	//page속성값
+		printPage(page);				
+		printPageNumber(page);			
+	});
+});
+/*]]*/
+</script>
+</head>
+<body>
+ 
+  
+<!-- header fragment 사용 -->
+<th:block th:replace="fragments/header :: headerFragment"></th:block>
+
+<fieldset >
+
+<!-- 
+ <nav id="board_category" ><!--goCategory가 동작해서 board_num=1일때 
+ 	
+   <span><a th:href="@{/listBoard/{board_num}(board_num=${1})}" th:text="Notice" style="text-decoration: none"></a></span>
+   <span><a th:href="@{/listBoard/{board_num}(board_num=${2})}" th:text="Community" style="text-decoration: none"></a></span>
+   <span><a th:href="@{/listBoard/{board_num}(board_num=${3})}" th:text="Review" style="text-decoration: none"></a></span>
+   <span><a th:href="@{/listBoard/{board_num}(board_num=${4})}" th:text="FAQ" style="text-decoration: none"></a></span>
+  </nav>
+   -->
+  <table>   
+      <caption></caption>
+      <tr>
+        <thead>
+          <tr>
+             <th>글번호</th>
+             <th>작성자</th>
+             <th>글제목</th>           
+             <th>조회수</th>
+             <th>작성일자</th>
+          </tr>
+        </thead>
+          <tbody id="list">        
+        <!--타임리프로
+      	  <tr th:each="b:${list}">
+            <td th:text="${b.post_num}"></td>
+          	<td id="btnDetail"><a th:href="@{/detailPost/{b.board_num}/{b.post_num}(b.board_num=${b.board_num},b.post_num=${b.post_num})}" 
+          	style="text-decoration: none"><span th:text="${b.post_title}"></span></a>
+            <td th:text="${b.post_hit}"></td>   
+          </tr>
+      -->
+        </tbody>
+     </table>
+     
+     <div id="paging"></div>
+     
+     <!-- 시작부터 끝까지 반복 -->
+     <!-- 타임리프로 페이징처리
+	<th:block th:each="page : ${#numbers.sequence(startPage,endPage)}">
+	page가 현재 page와 다를때///여기가 원본버전
+	<a th:if="${page != pageNum}" th:href ="@{/firstListBoard(page = ${page-1})}" th:text="${page}"></a>
+	<strong th:if="${page == pageNum}" th:text="${page}" style="color : green"></strong>
+ </th:block>-->
+  </fieldset>
+
+  
+</body>
+<!-- footer fragment 사용 -->
+<th:block th:replace="fragments/footer :: footerFragment"></th:block>
+</html>

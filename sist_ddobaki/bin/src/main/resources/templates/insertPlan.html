@@ -1,43 +1,106 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout">
 <head>
-<meta charset="UTF-8">
-<title>Insert title here</title>
+<title> Plan Your Trip! </title>
+<!-- Required meta tags -->
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<!-- Bootstrap CSS -->
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-0evHe/X+R7YkIZDRvuzKMRqM+OrBnVFBL6DOitfPri4tjfHxaWutUpFmBp4vmVor" crossorigin="anonymous">
+<link rel="stylesheet" th:href="@{/styles/common.css}">
+<link rel="stylesheet" th:href="@{/styles/plan.css}">
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/js/bootstrap.bundle.min.js" integrity="sha384-pprn3073KE6tl6bjs2QrFaJGz5/SUsLqktiwsUTF55Jfv3qYSDhgCecCxMW52nD2" crossorigin="anonymous"></script>
+<script type="text/javascript" src="//dapi.kakao.com/v2/maps/sdk.js?appkey=d2b656d20ccafdc06e8cff4e6a7e35ef"></script>
 <script type="text/javascript" src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-<script type="text/javascript">
-	
+<script type="text/javascript" th:inline="javascript" th:src="@{/js/plan.js}"></script>
+<script th:inline="javascript" type="text/javascript">
 </script>
 </head>
 <body>
 
-	<h2>플랜 입력 양식</h2>
-	<hr>
-	<form action="/savePlan" method="post">
+<!-- header fragment 사용 -->
+<th:block th:replace="fragments/header :: headerFragment"></th:block>
+	
+<!--<h3>PLAN</h3><hr>-->
+<section>
+<div class="container border border-0">
+    <form onsubmit="return okSubmit(event)" th:action="@{/savePlan}+${'/'+user_num}" method="post">
+     <div class="form-inline">
+		<!-- 여행 타이틀 (plan_group_num) -->
+		<div class="input-group grpNum">
+			<input style="display: none" id="planText" type="text" class="form-control planGroupTxt" name="plan_name">
+			<input style="display: none" name="plan_group_num" id="planGrpNum"> <!--name="plan_group_num"-->
+			<select id="planList" class="form-select planGroupOpGrp" aria-label="select-plan-group">
+				<option selected disabled>여행 계획 선택</option>
+				<option th:each="p:${user_plan_list}" th:value="${p.plan_group_num}" th:text="${p.plan_name}" class="planGroupOp"></option>
+			</select>
+			
+		<!-- 플랜 그룹 넘버(plan_group_num) : <input type="number" name="plan_group_num" th:value="${groupnum}"><br>
+			플랜 그룹 이름(plan_name) : <input type="text" name="plan_name" th:value="${plan_name}"><br> -->
+			<div class="input-group-addon input-group-button">
+				<button type="button" id="btnGrpAdd" class="btn btn-success">새그룹추가</button>
+				<button style="display: none" type="button" id="btnGrpList" class="btn btn-success">리스트보이기</button>
+				<button type="button" id="btnGrpDel" class="btn btn-danger">삭제</button>
+			</div>
+		</div>
+	</div> 
+	<!-- 여기까지 여행 타이틀 -->
+	
+	<!-- 여기부터 주요 컨텐츠 -->
+	<div class="row bottom ">
+	   		<div id="map" class="col mapContainer border border-5 border-success" ></div> <!-- 지도 map --> <!-- 왼쪽 -->
+	   	<div class="col right border border-0 rounded"> <!-- 오른쪽 -->
+	   	
+	     	<!-- 여행 날짜(plan_date) -->
+   			<div class="row justify-content-center date input-group-addon input-group-button">
+	     		<input type="date" id="planDate" name="plan_date" th:value="${plan_date}" class="col-5">
+	     		<button type="button" id="AddPlan" class="btn btn-success col-2">동선추가</button>
+   				<div class="btnPlaceListAll btn-group">
+	     			<div class="btn_place_list">
+					<button id="btnPlace" class="btn btn-success btn-sm dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">장소 선택</button>
+						<ul id="placeList" class="dropdown-menu dropdown">
+							<li  id="placeListOp" class="dropdown-item" th:each="p:${place_list}" th:value="${p.place_num}" th:text="${p.place_name}">
+							</li>
+						</ul>
+					</div>
+					<div class="btn_dibs_list">
+					<button id="btnDibs" class="btn btn-success btn-sm dropdown-toggle display:flex" type="button" data-bs-toggle="dropdown" aria-expanded="false">찜 리스트</button>
+						<ul id="dibsList" class="dropdown-menu btnDibs dropdown">
+							<li id="dibsListOp" class="dropdown-item" th:each="d:${dibs}" th:text="${d.place.place_name}" th:value="${d.place.place_num}"></li>
+						</ul>
+					</div>
+					<div class="btn_rsv_list">
+					<button id="btnRsv" class="btn btn-success btn-sm dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">예약 리스트</button>
+						<ul id="rsvList" class="dropdown-menu dropdown">
+							<li id="rsvListOp" class="dropdown-item" th:each="r:${reservation}" th:text="${r.place.place_name}" th:value="${r.place.place_num}" ></li>
+						</ul>
+					</div>
+   				</div><!--장소, 찜, 예약 리스트 버튼그룹 div End -->
+     		</div>
 		<!-- 플랜 그룹 정보 -->
-		플랜 그룹 넘버(plan_group_num) : <input type="number" name="plan_group_num" th:value="${plan_group_num}"><br>
-		플랜 그룹 이름(plan_name) : <input type="text" name="plan_name" th:value="${plan_name}"><br><br>
-		<hr>
-		유저 번호(user_num) :<input type="number" name="userinfo.user_num" th:value="${user.user_num}"><br>
-		장소 번호(place_num) :<br>
-		<select name="place.place_num">
-			<option value="">-- 선택 --</option>
-			<option th:each="p:${place_list}" th:value="${p.place_num}" th:text="${p.place_name}"></option>
-		</select>
-		<hr>
-		<!-- 여행 세부 내용 -->
-		플랜 번호(plan_num) : <input type="number" name="plan_num" th:value="${plannum}"><br>
-		여행 날짜(plan_date) : <input type="date" name="plan_date" th:value="${plan_date}"><br>
-		플랜 플로우 번호(해당 날짜의 여행 순서; plan_flow_num): <br>
-		<input type="number" name="plan_flow_num" th:value="${plan_flow_num}"><br>
-		플랜 플로우 이름(해당 장소; plan_flow_name) : <br>
-		<input type="text" name="plan_flow_name" th:value="${plan_flow_name}"><br>
-		<input type="submit" value="등록" id="btnSubmit">
+		<div class="border border-0 input_box rounded">
+			<!-- 유저 번호(user_num) -->
+			<input type="hidden" id="userNum" name="userinfo.user_num" th:value="${user_num}">
+			<!-- 여행 세부 내용 -->
+			<!--<input id="plannum" type="hidden" name="plan_num" th:value="${plannum}">	-->		
+
+			<div class="input-group" >
+				<div id="inputAppend"></div>
+			</div><!-- input-group 끝 -->
+		</div><!-- input_box 끝 -->
+		
+	   <!-- 입력, 수정, 삭제 버튼위치 -->
+	 	<div class="d-flex justify-content-end btnAll"  aria-label="save, delete button">
+		  <button id="btnSubmit" type="submit" class="btn btn-success">수정/저장</button>
+		  <button type="reset" class="btn btn-secondary"> 리셋</button>
+		  <button id="btnDelete" type="button" class="btn btn-danger">삭제</button>
+		</div>		
+ 	 </div><!-- 오른쪽 박스 끝 -->
+  	 </div><!-- bottom 박스 끝 -->
 	</form>
-	
+</div> <!-- 전체 컨테이너 끝-->
+</section>
 </body>
+<!-- footer fragment 사용 -->
+<th:block th:replace="fragments/footer :: footerFragment"></th:block>
 </html>
-
-<!-- 
-
-	
- -->

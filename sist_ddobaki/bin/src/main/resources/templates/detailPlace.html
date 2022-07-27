@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<!-- css 초기화 -->
+<link rel="stylesheet"
+	href="https://cdn.jsdelivr.net/npm/reset-css@5.0.1/reset.min.css" />
+
+<!-- bootstrap -->
+<link rel="stylesheet"
+	href="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/css/bootstrap.min.css"
+	integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm"
+	crossorigin="anonymous">
+
+<!-- jquery -->
+<script type="text/javascript"
+	src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+<!-- jquery 이미지 슬라이드  -->
+<link rel="stylesheet" type="text/css"
+	href="//cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick.css" />
+<script type="text/javascript"
+	src="//cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick.min.js"></script>
+<link rel="stylesheet" type="text/css"
+	href="//cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick-theme.css" />
+<!-- font-awesome icon -->
+<link rel="stylesheet"
+	href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css" />
+<title>Insert title here</title>
+</head>
+
+
+<!-- css -->
+<style type="text/css">
+#infoBox {
+	padding: 1em;
+	position: relative;
+	width: 100%;
+}
+
+#typeBox {
+	margin-bottom: 10px;
+	width: fit-content;
+	background: green;
+	color: white;
+	text-align: center;
+	border-radius: 8px;
+}
+
+#typeBox>span {
+	padding: 0 1rem;
+	font-size: 2em;
+}
+
+#btnBox {
+	position: absolute;
+	bottom: 0;
+	right: 0;
+	margin: 10px;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	flex-direction: row;
+	flex-wrap: wrap;
+}
+
+#dibBox {
+	padding-left: 0.4em;
+}
+</style>
+
+
+
+
+<body>
+
+	<!-- 전체 컨테이너 -->
+	<div id="detailContainer">
+
+		<header style="display: flex; height: 25vh">
+			<!-- 홈페이지 로고 -->
+			<div id="logoBox">
+				<img alt="logo이미지 " src="/logo.png"
+					style="width: 100px; height: 100px">
+			</div>
+		</header>
+
+		<main
+			style="background-color: green; height: 75vh; display: flex; justify-content: center; align-items: center;">
+
+			<!-- 하얀배경 -->
+			<div id="detailBg"
+				style="background: white; width: 98%; height: 95%; overflow: scroll; padding: 5px">
+
+				<!-- placeImage(이미지 슬라이더), 장소 정보(place(type, name, explain, service, addr, tel, detailEx), board(review)) -->
+				<!-- img랑 장소 간단 정보 -->
+				<div id="detailInfo" style="display: flex">
+
+					<!-- 이미지 슬라이드 -->
+					<div id="imgbox" style="width: 500px; height: 500px;">
+						<div id="slider-div">
+							<div th:each="pi : ${piList}">
+								<img th:src="@{'/detailImage/'+${pi.place_image_file}}"
+									th:alt="${pi.place_image_file}"
+									style="width: 470px; height: 470px; margin: 0 auto">
+							</div>
+
+						</div>
+
+					</div>
+
+					<!-- 장소 간단 정보  -->
+					<div id="infoBox">
+						<!-- 장소 타입  -->
+						<th:block th:switch="${place.place_type_num}"
+							style="padding-bottom: 10px">
+							<div id="typeBox" th:case="1">
+								<span>숙소</span>
+							</div>
+							<div id="typeBox" th:case="2"><span>식음료</span></div>
+							<div id="typeBox" th:case="3"><span>관광</span></div>
+						</th:block>
+
+						<!-- like insert를 위한 place_num, user_num 값 가져오기  -->
+						<input id="place_num" th:value="${place.place_num}"
+							style="display: none"> <input id="user_num"
+							th:value="${session.user_num}" style="display: none">
+
+
+						<!-- 장소 이름  -->
+						<div id="nameBox" style="padding-bottom: 10px">
+							<h3 id="place_name" th:text="${place.place_name}"></h3>
+						</div>
+
+						<!-- 장소 설명  -->
+						<div id="explainBox" style="padding-bottom: 10px">
+							<h5>장소 설명</h5>
+							<span id="plan_explain" th:text="${place.place_explain}"></span>
+						</div>
+
+						<!-- 장소 서비스 -->
+						<div id=serviceContainer style="padding-bottom: 10px">
+							<h5>서비스 시설</h5>
+							<div id="serviceBox" style="display: flex">
+								<!-- 없으면 hidden 처리  -->
+								<!-- 주차 -->
+								<div th:if="${place.place_park}=='1'"
+									style="padding-right: 10px">
+									<i class="fa-solid fa-square-parking fa-2x"></i>
+								</div>
+								<!-- 조식  -->
+								<div th:if="${place.place_meal}=='1'"
+									style="padding-right: 10px">
+									<i class="fa-solid fa-utensils fa-2x"></i>
+								</div>
+								<!-- 스파  -->
+								<div th:if="${place.place_spa}=='1'" style="padding-right: 10px">
+									<i class="fa-solid fa-bath fa-2x"></i>
+								</div>
+								<!-- 강아지 무게  -->
+								<th:block th:switch="${place.place_weight}">
+									<div th:case="1">
+										<i class="fa-solid fa-dog fa-2x"></i>
+										<div>0~5</div>
+									</div>
+									<div th:case="2">
+										<i class="fa-solid fa-dog fa-2x"></i>
+										<div>6~15</div>
+									</div>
+									<div th:case="3">
+										<i class="fa-solid fa-dog fa-2x"></i>
+										<div>15~</div>
+									</div>
+									<span th:case="*"></span>
+
+								</th:block>
+							</div>
+						</div>
+
+
+						<!-- 장소 주소  -->
+						<div id="addrBox">
+							<p>
+								장소 주소 : <span th:text="${place.place_addr}"></span>
+							</p>
+						</div>
+
+						<!-- 장소 전화  -->
+						<div id="telBox">
+							<p>
+								장소 연락처 : <span th:text="${place.place_tel}"></span>
+							</p>
+						</div>
+
+
+						<!-- 장소 예약, 찜 버튼  -->
+						<div id="btnBox">
+							<button id="rsBtn" class="btn btn-success"
+								th:onclick="'location.href=\''+@{'/reservation/insertReservation/'+${place.place_num}}+'\''">예약</button>
+							<div id="dibBox">
+								<i id="dib" class="fa-regular fa-heart fa-2x"
+									onclick="myLike(this)"></i>
+							</div>
+						</div>
+
+					</div>
+					<!--  infoBox 끝  -->
+
+				</div>
+				<!-- detailInfo 끝  -->
+
+				<!-- 장소 상세설명, 리뷰 컨테이너  -->
+				<div id="dExAndRvBox">
+
+					<!-- 상세설명 -->
+					<div id="detailExBox"
+						style="background: green; padding: 5px; margin: 5px 0">
+						<h5 style="color: white">상세설명</h5>
+						<div id="dExMain" style="background-color: white; padding: 5px;">
+							<span th:text="${place.place_detail}"></span>
+						</div>
+					</div>
+
+
+					<div id="reviewBox" style="background: green; padding: 5px;">
+						<h5 style="color: white">Review</h5>
+						<div id="place_review"
+							style="background-color: white; padding: 5px; margin: 5px 0">
+							<table id="reviewTable" class="table">
+								<thead>
+									<tr>
+										<th>번호</th>
+										<th>게시물 이름</th>
+										<th>조회수</th>
+									</tr>
+								</thead>
+
+								<tbody>
+
+									<tr th:each="b, i: ${review}">
+										<td th:text="${i.count}"></td>
+										<td><a
+											th:href="@{'/detailPost/'+${b.board_num}+'/'+${b.post_num}}"
+											th:text="${b.post_title}"></a></td>
+										<td th:text="${b.post_hit}"></td>
+									</tr>
+								</tbody>
+
+							</table>
+						</div>
+					</div>
+				</div>
+
+
+
+
+			</div>
+			<!--  detainBg 끝  -->
+
+		</main>
+
+	</div>
+	<!-- 전체 컨테이너 끝  -->
+	<script type="text/javascript">
+		var place_num = document.getElementById("place_num").value;
+		var user_num = document.getElementById("user_num").value;
+		var temp = {};
+		temp['place_num'] = place_num;
+		temp['user_num'] = user_num;
+		// 이미지 슬라이드 
+		$(document).ready(function() {
+			$('#slider-div').slick({
+
+				arrows : false,
+				dots : true,
+			});
+
+			// session에 저장된 user_num에 따른 dib 목록에 해당 place있을시 꽉찬 하트 처리 
+			$.ajax({
+				url : "/findDibs",
+				data : {
+					place_num : place_num
+				},
+				success : function(dlist) {
+					//해당 place를 찜한 user들의 user_num를 모아놓은  배열 
+					var ulist = [];
+					$.each(dlist, function(i) {
+						ulist.push(dlist[i].userinfo.user_num);
+					});
+
+					console.log(ulist);
+
+					dibEl = document.getElementById("dib");
+					if ($.inArray(parseInt(user_num), ulist) != -1) {
+						dibEl.classList.replace('fa-regular', 'fa-solid');
+					} else {
+						dibEl.classList.replace('fa-solid', 'fa-regular');
+					}
+
+				},
+				error : function() {
+					alert('error');
+				}
+			})
+
+		})
+
+		//빈하트 클릭시 dibs테이블에 해당 장소 insert, 꽉찬 하트 클릭 시 dib테이블에서 해당 장소 delete 
+		function myLike(x) {
+			if (x.classList.contains('fa-regular')) {
+				x.classList.replace('fa-regular', 'fa-solid');
+				$.ajax({
+					url : "/saveDibs",
+					data : temp
+
+				})
+
+			} else if (x.classList.contains('fa-solid')) {
+				x.classList.replace('fa-solid', 'fa-regular');
+				$.ajax({
+					url : "/deleteDibs",
+					data : temp
+				})
+			}
+
+		}
+	</script>
+</body>
+</html>
+

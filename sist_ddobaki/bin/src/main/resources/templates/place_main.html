@@ -1,0 +1,456 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+<meta charset="UTF-8" />
+<title>Insert title here</title>
+<!-- css 초기화 -->
+<link rel="stylesheet"
+	href="https://cdn.jsdelivr.net/npm/reset-css@5.0.1/reset.min.css" />
+
+<!-- css -->
+<style type="text/css">
+</style>
+
+<!-- bootstrap -->
+<link rel="stylesheet"
+	href="https://cdn.jsdelivr.net/npm/bootstrap@4.1.3/dist/css/bootstrap.min.css"
+	integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO"
+	crossorigin="anonymous">
+<link rel="stylesheet" th:href="@{/styles/common.css}">
+
+<!-- kakao map api -->
+<script type="text/javascript"
+	src="//dapi.kakao.com/v2/maps/sdk.js?appkey=ee887f0226dc3532f84f097f73f2250b"></script>
+
+
+<!-- jquery -->
+<script type="text/javascript"
+	src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+<!-- selectBox -->
+<script
+	src="https://cdnjs.cloudflare.com/ajax/libs/jquery.sumoselect/3.4.6/jquery.sumoselect.min.js"
+	integrity="sha512-QrFuYvQdMYt9Ux8Npgtqy1fnaN7qsNA68M0iFnyXwdrARBjLxrJrlbkdqrsmx7KThIagBgEdEDdWtEHm7cC2ag=="
+	crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<link rel="stylesheet"
+	href="https://cdnjs.cloudflare.com/ajax/libs/jquery.sumoselect/3.4.6/sumoselect.min.css"
+	integrity="sha512-vU7JgiHMfDcQR9wyT/Ye0EAAPJDHchJrouBpS9gfnq3vs4UGGE++HNL3laUYQCoxGLboeFD+EwbZafw7tbsLvg=="
+	crossorigin="anonymous" referrerpolicy="no-referrer" />
+
+
+<!-- font-awesome icon -->
+<link rel="stylesheet"
+	href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css" />
+
+</head>
+
+<style>
+.placeImgBox {
+	width: 50px;
+	height: 50px;
+	background: black;
+	overflow: hidden;
+	margin: 10px;
+}
+
+.thumbnail {
+	width: 100%;
+	height: 100%;
+}
+
+td {
+	vertical-align: middle;
+	text-align: center;
+}
+</style>
+<body>
+	<!-- header fragment 사용 -->
+	<th:block th:replace="fragments/header :: headerFragment"></th:block>
+	<!-- 전체 컨테이너 -->
+	<div id="placeContainer">
+		<!-- placeheader(홈페이지 로고, 지역선택박스, 장소선택박스) -->
+		<div
+			style="display: flex; height: 3vh; position: relative; margin: 10px">
+
+			<!-- 지역선택박스, 장소선택박스 컨테이너 -->
+			<div id="selectContainer"
+				style="display: flex; position: absolute; left: 20%;">
+				<!-- 지역 선택 박스 -->
+				<select id="place_region_num"
+					style="height: min-content; margin: 0 10px"
+					onchange=changeValue(this.id)>
+					<option value=''>지역</option>
+					<option value="1">강원</option>
+					<option value="2">서울</option>
+					<option value="3">경기</option>
+				</select>
+
+
+				<!-- 장소 선택 박스 -->
+				<select id="place_type_num" style="height: min-content"
+					onchange=changeValue(this.id)>
+					<option value=''>장소</option>
+					<option value="1">숙소</option>
+					<option value="2">식음료</option>
+					<option value="3">관광</option>
+				</select>
+			</div>
+		</div>
+
+		<!-- place 카테고리 본문 -->
+		<main style="display: flex">
+			<!-- 검색박스, 장소리스트 컨테이너-->
+			<div id="listContainer"
+				style="width: 20vw; height: 70vh; margin-right: 5px; padding-bottom: 0.8em; display:flex; flex-direction:column; align-items:center; background: #9AE17B;">
+				<!-- 검색박스 -->
+				<div id="searchBox" style="padding: 10px; width:100%">
+					<!-- 장소 이름, 장소 필터 ,정렬 확인버튼 -->
+
+					<div style="display: flex">
+						<!-- 필터  -->
+						<select id="placeOption" multiple="multiple" class="testSelAll">
+							<!-- value가 place_park면 place_park = 1 이런 식으로 값 전달 -->
+							<option value="place_park">주차</option>
+
+							<option value="place_meal">조식</option>
+
+							<option value="place_spa">스파</option>
+
+							<!-- SMALL :1, MEDIUM :2, LARGE:3  -->
+							<option value="small">소형견</option>
+
+							<option value="medium">중형견</option>
+
+							<option value="large">대형견</option>
+						</select>
+
+						<!-- 정렬 버튼-->
+						<select id="place_array" onchange=getSort(this.id)>
+							<option value=default>정렬</option>
+							<option value="place_num">최신순</option>
+							<option value="place_hit">조회순</option>
+						</select>
+					</div>
+
+
+
+					<div class="search" style="margin: 5px; display:flex">
+
+						<!-- 장소 이름 -->
+						<div class="form-outline">
+							<input type="search" id="place_name" class="form-control" /> 
+						</div>
+		
+						<!--  확인 버튼  -->
+						<button id="submitName" class="btn btn-success" onclick="submitPname()"><i class="fas fa-search"></i></button>
+					</div>
+
+
+				</div>
+
+
+				<!-- 장소리스트 컨테이너 -->
+				<div id="placeListBox"
+					style="width: 90%; height: 77%; margin: 0 auto; border-radius: 11px; overflow-y: scroll; background: white">
+					<table id="placeList" style="background-color: white; width: 100%;">
+					</table>
+				</div>
+
+
+			</div>
+
+			<!-- 지도 컨테이너 -->
+			<div id="mapContainer"
+				style="width: 1200px; background: #9AE17B; display: flex; height: 70vh; justify-content: center; align-items: center;">
+				<!-- 지도 api 공간 -->
+				<div id="mapAPI"
+					style="width: 95%; height: 93%; border-radius: 30px; margin: 10px; background-color: white;"></div>
+			</div>
+		</main>
+	</div>
+	<!--전체 컨테이너 끝 -->
+
+	<script type="text/javascript">
+			
+		var mapContainer = document.getElementById('mapAPI'), // 지도를 표시할 div 
+		mapOption = { 
+		    center: new kakao.maps.LatLng(38.20652873,127.8501068), 
+		    level: 11 // 지도의 확대 레벨
+		};
+	
+		//지도를 표시할 div와  지도 옵션으로  지도를 생성합니다
+		var map = new kakao.maps.Map(mapContainer, mapOption); 
+		
+		var positions = [];
+		// 마커 이미지의 이미지 주소입니다
+		var imageSrc = "map/paws.png";
+		
+		// findByCondition에 전달할 매개변수 객체
+		var temp = {};
+		
+
+		/* 		jquery 작성 */
+		$(document).ready(function() {
+			
+			$.ajax({
+				url:"/placeMain",
+				data:temp,
+				success:function(data){
+					console.log(data);
+					data.sort(function(a,b){
+						return parseInt(a.place_num) - parseInt(b.place_num)
+					})
+		            var results = data;
+					
+		            var str = '<tr>';
+		            $.each(results , function(i){
+		            	str += '<td><div class="placeImgBox rounded-circle"><img alt = "'+ results[i].place_thumbnail+'" src="/webapp/place_thumbnail/' + results[i].place_thumbnail + '" class = "thumbnail"></div></td><td><a href="/place/detailPlace/'+results[i].place_num+'">' + results[i].place_name + '</a></td>';
+		                str += '</tr>';
+		                
+		           });
+		            
+		            
+		           for(var i = 0; i < results.length;i++){
+		        	   
+		        	   var row = results[i];
+		        	   
+		        	   positions.push({
+							title:row.place_name, 
+							latlng:new kakao.maps.LatLng(row.place_lat, row.place_lng)
+						});
+		           }
+		           
+
+		        	       
+		           console.log(positions);
+		           
+		           for(var i = 0; i < positions.length; i++){
+						// 마커 이미지의 이미지 크기 입니다
+					    var imageSize = new kakao.maps.Size(24, 24); 
+					    
+					    // 마커 이미지를 생성합니다    
+					    var markerImage = new kakao.maps.MarkerImage(imageSrc, imageSize); 
+					    
+					    // 마커를 생성합니다
+					    var marker = new kakao.maps.Marker({
+					        map: map, // 마커를 표시할 지도
+					        position: positions[i].latlng, // 마커를 표시할 위치
+					        title : positions[i].title, 
+					        image : markerImage // 마커 이미지 
+					    });
+					}
+		           
+		           function panTo() {
+		        	    // 이동할 위도 경도 위치를 생성합니다 
+		        	    var moveLatLon = new kakao.maps.LatLng(result[i].place_lat, results[i].place_lng);
+		        	    
+		        	    // 지도 중심을 부드럽게 이동시킵니다
+		        	    // 만약 이동할 거리가 지도 화면보다 크면 부드러운 효과 없이 이동합니다
+		        	    map.panTo(moveLatLon);            
+		        	} 
+		           
+		           
+		           $("#placeList").append(str); 
+		        },
+		        error : function(){
+		            alert("error");
+		        }
+			})
+			
+			
+			
+			
+			$('.testSelAll').SumoSelect({
+				placeholder : 'option', // placeOption placeholder 지정
+				okCancelInMulti : true,
+				selectAll : true
+			});
+
+			$('.btnOk').on('click', function() {
+				$("#placeList").empty();
+				// 선택 해제 후 다시 선택시 해 옵션 값들 초기화 시키고 다시 선택된 값이 들어가게 하기 위한 초기화
+				temp['place_park']=null;
+				temp['place_meal']=null;
+				temp['place_spa']=null;
+				temp['place_weight']=null;
+				
+				// 옵션 선택 후 ok 누를 시 동
+				$('.testSelAll option:selected').each(function(i) {
+					a = $(this).val();
+					if(a=='small'||a=='medium' || a == 'large'){
+						if(a=='small'){
+							temp['place_weight'] = 1;
+						}
+						else if(a=='medium'){
+							temp['place_weight'] = 2;
+						} else if(a == 'large'){
+							temp['place_weight'] = 3;
+							
+						}
+					} else {
+						
+						temp[a] = 1;
+						//{park:1,spa:1}
+					}
+					
+				})
+			
+				console.log(temp);
+				$.ajax({
+					url:"/placeMain",
+					data:temp,
+					success:function(data){
+						data.sort(function(a,b){
+							return parseInt(a.place_num) - parseInt(b.place_num)
+						})
+						console.log("옵션 검색 ");
+						console.log(data);
+			            var results = data;
+			            var str = '<tr>';
+			            $.each(results , function(i){
+			            	str += '<td><div class="placeImgBox rounded-circle"><img alt = "'+ results[i].place_thumbnail+'" src="/webapp/place_thumbnail/' + results[i].place_thumbnail + '" class = "thumbnail"></div></td><td><a href="/place/detailPlace/'+results[i].place_num+'">' + results[i].place_name + '</a></td>';
+			                str += '</tr>';
+			           });
+			            
+			           $("#placeList").append(str); 
+			        },
+			        error : function(){
+			            alert("error");
+			        }
+				})
+							
+				 
+			});
+			
+
+
+		});
+		
+		/*  지역 값,장소 종류 값 가져오기 */
+		function changeValue(clicked_id){
+			$("#placeList").empty();
+			var compID= document.getElementById(clicked_id);
+			temp[clicked_id]= compID.options[compID.selectedIndex].value;
+			// {region:1}
+			// {array:hits desc}
+			
+			$.ajax({
+				
+				url: "/placeMain",
+				data: temp,
+				success:function(data){
+					console.log("지역검색,장소 검색");
+					console.log(data);
+					data.sort(function(a,b){
+						return parseInt(a.place_num) - parseInt(b.place_num)
+					})
+		            var results = data;
+		            var str = '<tr>';
+		            $.each(results , function(i){
+		            	str += '<td><div class="placeImgBox rounded-circle"><img alt = "'+ results[i].place_thumbnail+'" src="/webapp/place_thumbnail/' + results[i].place_thumbnail + '" class = "thumbnail"></div></td><td><a href="/place/detailPlace/'+results[i].place_num+'">' + results[i].place_name + '</a></td>';
+		                str += '</tr>';
+		           });
+		           $("#placeList").append(str); 
+		        },
+		        error : function(){
+		            alert("error");
+		        }
+						
+			}); 
+			
+		}
+		
+		/*  정렬 하기  */
+		function getSort(clicked_id){
+			$("#placeList").empty();
+			var compID= document.getElementById(clicked_id);
+			compValue = compID.options[compID.selectedIndex].value;
+			$.ajax({
+				
+				url: "/placeMain",
+				data: temp,
+				success:function(data){
+					console.log("정렬");
+					console.log(compValue);
+					data.sort(function(a,b){
+						return parseInt(a.place_num) - parseInt(b.place_num)
+					})
+					if(compValue == "place_num"){
+						//최신 순
+						data.sort(function(a,b){
+							return parseInt(b.place_num) - parseInt(a.place_num)
+						})
+					} else if(compValue == "place_hit"){
+						//조회 순
+						data.sort(function(a,b){
+							return parseInt(b.place_hit) - parseInt(a.place_hit)
+						})
+					} else {
+						data.sort(function(a,b){
+							return parseInt(a.place_num) - parseInt(b.place_num)
+						})
+					}
+					console.log(data);
+					
+		            var str = '<tr>';
+		            $.each(data , function(i){
+		            	str += '<td><div class="placeImgBox rounded-circle"><img alt = "'+ data[i].place_thumbnail+'" src="/webapp/place_thumbnail/' + data[i].place_thumbnail + '" class = "thumbnail"></div></td><td><a href="/place/detailPlace/'+data[i].place_num+'">' + data[i].place_name + '</a></td>';
+		                str += '</tr>';
+		           });
+		           $("#placeList").append(str); 
+		        },
+		        error : function(){
+		            alert("error");
+		        }
+						
+			}); 
+			
+		}
+		
+		
+		// place name 입력받아서 전송
+		function submitPname(){
+			$("#placeList").empty();
+			var name_val = document.getElementById("place_name").value;
+				temp["place_name"]="";
+				if(!(name_val.replace(/\s | /gi,"").length==0)){
+					temp["place_name"]=name_val;
+				}
+					
+				
+			$.ajax({
+				url: "/placeMain",
+				data: temp, 
+				success:function(data){
+					data.sort(function(a,b){
+						return parseInt(a.place_num) - parseInt(b.place_num)
+					})
+					console.log("장소이름 검색");
+					console.log(data);
+					
+		            var results = data;
+		            var str = '<tr>';
+		            $.each(results , function(i){
+		            	str += '<td><div class="placeImgBox rounded-circle"><img alt = "'+ results[i].place_thumbnail+'" src="/webapp/place_thumbnail/' + results[i].place_thumbnail + '" class = "thumbnail"></div></td><td><a href="/place/detailPlace/'+results[i].place_num+'">' + results[i].place_name + '</a></td>';
+		                str += '</tr>';
+		           });
+		           $("#placeList").append(str); 
+		        },
+		        error : function(){
+		            alert("error");
+		        }
+					
+						
+			}); 
+			
+		}
+		
+		
+		
+		
+	</script>
+<!-- footer fragment 사용 -->
+<th:block th:replace="fragments/footer :: footerFragment"></th:block>
+</body>
+</html>

@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>강아지 추가</title>
+
+<link rel="stylesheet"
+	href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap.min.css">
+</head>
+<body>
+	<div id="mainContainer"
+		style="display: grid; place-items: center; min-height: 100vh;">
+		<div id="dogFormBox"
+			style="background: #FFD469; width: 500px; height: 300px; border-radius: 30px; padding: 20px; display: flex; flex-direction: column; align-items: center;">
+			<div id="formBox"
+				style="background: white; width: 97%; height: 70%; border-radius: 30px; margin-bottom: 20px; display: flex; justify-content: center; align-items: center;">
+				<form method="post" action="/saveDog" style="display: block;"
+					id="addDogForm">
+					<input name="user_num" type="text" th:value="${session.user_num}"
+						style="display: none">
+					<div class="form-group">
+						<label for="">강아지 이름:</label> <input type="text" id="dog_name"
+							name="dog_name">
+					</div>
+					<div class="form-group">
+						<label for="">강아지 성별: </label> <select name="dog_gender"
+							id="dog_gender"><option value="1">남자</option>
+							<option value="0">여자</option></select> <label for="">중성화 여부</label><select
+							name="dog_desexed" id="dog_desexed"><option value="1">유</option>
+							<option value="0">무</option></select>
+					</div>
+					<div class="form-group">
+						<label for="">강아지 나이:</label> <input type="text" name="dog_age"
+							id="dog_age">
+					</div>
+					<div class="form-group" style="margin: 0">
+						<label for=""> 강아지 무게:</label> <input type="text"
+							name="dog_weight" id="dog_weight">
+					</div>
+
+				</form>
+			</div>
+			<button id="#saveDogBtn" type="submit" form="addDogForm"
+				style="background: #6BBA62; width: 97%; height: 20%; border-radius: 20px; border: 0; color: white; font-weight: bold; font-size: 1.5em">
+				강아지 추가</button>
+
+		</div>
+	</div>
+
+	<script type="text/javascript">
+		window.onbeforeunload=function(){
+			window.opener.location.reload();
+		} 
+	
+		
+	</script>
+</body>
+</html>
