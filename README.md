@@ -5,7 +5,7 @@
 
 **🔗  Links**
 
-Github  https://github.com/pearlrabbit/sist_ddobaki
+Github  https://github.com/doyeon111/sist_ddobaki
 
 기능 소개 영상                                                             [realtime의 또바기 프로젝트 발표 시연 영상 - YouTube](https://www.youtube.com/watch?v=1e8npsqzjEk)
 
