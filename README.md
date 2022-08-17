@@ -42,7 +42,7 @@ Github  https://github.com/doyeon111/sist_ddobaki
 - 클래스 명세서 : [또바기발표 클래스 설계발표 (2022.06.21) - Google Slides](https://docs.google.com/presentation/d/18HZqDqlaqNlRWdpZKMblLllmsFw8IIO6Bh49ZVi7juw/edit#slide=id.g1358e5e0751_2_63)
 - 전체 명세서 : [또바기 명세서 전체 - Google Sheets](https://docs.google.com/spreadsheets/d/1ZdGbQZcorBxZ4kf-IJzOkOKcc7EKqVkzpYgygHMf9w4/edit#gid=0)
 - 타임라인 및 개발환경, 기술스택 : [또바기 프로젝트 타임라인 - Google Sheets](https://docs.google.com/spreadsheets/d/1zih0feO_kBRcToAqs8OSFIW9tZ6B664vqArv9_HD_ko/edit#gid=627433076)
-- 프로젝트 중 개별 타임라인  : [김도연 (notion.so)](https://www.notion.so/0b5af37fcb2c4160a05cc1d78eb66658?v=bb110a6ee6c44ec4b647adf9da676887)
+- 프로젝트 중 개별 타임라인  : [김도연 (notion.so)](https://local-primrose-045.notion.site/ccd5f098c8844f62bb4be9bd3c48d2b1?v=12b192fab0854cb1ba1ddae47eba5da4)
 
 ## 🐕 시연 영상
 
